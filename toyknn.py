@@ -5,6 +5,8 @@ import pickle
 import re
 
 from sklearn import pipeline as sk_pipeline
+from pipeline import ComposeTransformer
+
 
 #from hypergbm.pipeline import ComposeTransformer
 from hypernets.model.estimator import Estimator
@@ -36,7 +38,6 @@ class toy_KNN_estimator(Estimator):
         self.data_cleaner_params = data_cleaner_params
         self.data_cleaner = None
         self.knn_model = None
-        self.pipeline_signature = None
         self.fit_kwargs = None
         self.class_balancing = None
         self.classes_ = None
@@ -45,8 +46,9 @@ class toy_KNN_estimator(Estimator):
         return 
 
     def _build_model(self, space_sample):
-        """This function builds a kNN model, space_sample should be a..., the
-        compile_and_forward, which is used to..., comes from ..."""
+        """This function builds a kNN model, space_sample should be a search space
+        returned by the seacher, the compile_and_forward, which is used to..., comes 
+        from ..."""
         space, _ = space_sample.compile_and_forward()
 
         """get_outputs():this one is used to... and comes from"""
@@ -60,10 +62,39 @@ class toy_KNN_estimator(Estimator):
         self.fit_kwargs = outputs[0].fit_kwargs
 
         """dealing with the pipeline"""
+        pipeline_module = space.get_inputs(outputs[0])
+        assert len(pipeline_module) == 1, 'The `HyperEstimator` can only contains 1 input.'
+        assert isinstance(pipeline_module[0],
+                          ComposeTransformer), 'The upstream node of `HyperEstimator` must be `ComposeTransformer`.'
+        self.data_pipeline = self.build_pipeline(space, pipeline_module[0])
+
+        if self.data_cleaner_params is not None:
+            self.data_cleaner = DataCleaner(**self.data_cleaner_params)
+        else:
+            self.data_cleaner = None
 
     def build_pipeline(self, space, last_transformer):
-        raise NotImplementedError
+        transformers = []
+        while True:
+            next, (name, p) = last_transformer.compose()
+            transformers.insert(0, (name, p))
+            inputs = space.get_inputs(next)
+            if inputs == space.get_inputs():
+                break
+            assert len(inputs) == 1, 'The `ComposeTransformer` can only contains 1 input.'
+            assert isinstance(inputs[0],
+                              ComposeTransformer), 'The upstream node of `ComposeTransformer` must be `ComposeTransformer`.'
+            last_transformer = inputs[0]
+        assert len(transformers) > 0
+        if len(transformers) == 1:
+            return transformers[0][1]
+        else:
+            pipeline = sk_pipeline.Pipeline(steps=transformers)
+            return pipeline
 
+    @cache(arg_keys='X,y', attr_keys='data_cleaner_params,pipeline_signature',
+           attrs_to_restore='data_cleaner,data_pipeline',
+           transformer='transform_data')
     def fit_transform_data(self, X, y):
         if self.data_cleaner is not None:
             X, y = self.data_cleaner.fit_transform(X, y)
