@@ -1,3 +1,9 @@
+# -*- coding:utf-8 -*-
+__author__ = 'yangjian'
+"""
+
+"""
+
 from sklearn import pipeline, compose
 
 from hypernets.core.ops import ConnectionSpace
@@ -6,9 +12,6 @@ from hypernets.tabular import dataframe_mapper
 
 
 class HyperTransformer(ModuleSpace):
-    """
-    A HyperTransformer is a 
-    """
     def __init__(self, transformer=None, space=None, name=None, **hyperparams):
         self.transformer = transformer
         ModuleSpace.__init__(self, space, name, **hyperparams)
@@ -28,9 +31,6 @@ class HyperTransformer(ModuleSpace):
 
 
 class ComposeTransformer(HyperTransformer):
-    """
-    ComposeTransformer stands for
-    """
     def __init__(self, space=None, name=None, **hyperparams):
         HyperTransformer.__init__(self, None, space, name, **hyperparams)
 
@@ -59,18 +59,12 @@ class ComposeTransformer(HyperTransformer):
 
 
 class PipelineInput(HyperTransformer):
-    """
-    PipelineInput is what we use in
-    """
     def __init__(self, space=None, name=None, **hyperparams):
         HyperTransformer.__init__(self, None, space, name, **hyperparams)
         self.output_id = None
 
 
 class PipelineOutput(ComposeTransformer):
-    """
-    Similarly, PipelineOutput is designed for
-    """
     def __init__(self, pipeline_name, columns=None, space=None, name=None, **hyperparams):
         ComposeTransformer.__init__(self, space, name, **hyperparams)
         self.input_id = None
@@ -83,12 +77,9 @@ class PipelineOutput(ComposeTransformer):
         next, steps = self.get_transformers(inputs[0], self.input_id)
         p = pipeline.Pipeline(steps)
         return next, (self.pipeline_name, p)
-        
+
 
 class Pipeline(ConnectionSpace):
-    """
-    
-    """
     def __init__(self, module_list, columns=None, keep_link=False, space=None, name=None):
         assert isinstance(module_list, list), f'module_list must be a List.'
         assert len(module_list) > 0, f'module_list contains at least 1 Module.'
@@ -121,6 +112,59 @@ class Pipeline(ConnectionSpace):
 
         return pipeline_input, pipeline_output
 
-class DataFrameMapper():
-    def __init__(self) -> None:
-        pass
+
+class ColumnTransformer(ComposeTransformer):
+    def __init__(self, remainder='drop', sparse_threshold=0.3, n_jobs=None, transformer_weights=None, space=None,
+                 name=None, **hyperparams):
+        if remainder is not None and remainder != 'drop':
+            hyperparams['remainder'] = remainder
+        if sparse_threshold is not None and sparse_threshold != 0.3:
+            hyperparams['sparse_threshold'] = sparse_threshold
+        if n_jobs is not None:
+            hyperparams['n_jobs'] = n_jobs
+        if transformer_weights is not None:
+            hyperparams['transformer_weights'] = transformer_weights
+
+        ComposeTransformer.__init__(self, space, name, **hyperparams)
+
+    def compose(self):
+        inputs = self.space.get_inputs(self)
+        assert all([isinstance(m, PipelineOutput) for m in
+                    inputs]), 'The upstream module of `ColumnTransformer` must be `Pipeline`.'
+        transformers = []
+        next = None
+        for p in inputs:
+            next, (pipeline_name, transformer) = p.compose()
+            transformers.append((p.pipeline_name, transformer, p.columns))
+
+        pv = self.param_values
+        ct = compose.ColumnTransformer(transformers, **pv)
+        return next, (self.name, ct)
+
+
+class DataFrameMapper(ComposeTransformer):
+    def __init__(self, default=False, sparse=False, df_out=False, input_df=False, space=None, name=None, **hyperparams):
+        if default != False:
+            hyperparams['default'] = default
+        if sparse is not None and sparse != False:
+            hyperparams['sparse'] = sparse
+        if df_out is not None and df_out != False:
+            hyperparams['df_out'] = df_out
+        if input_df is not None and input_df != False:
+            hyperparams['input_df'] = input_df
+
+        ComposeTransformer.__init__(self, space, name, **hyperparams)
+
+    def compose(self):
+        inputs = self.space.get_inputs(self)
+        assert all([isinstance(m, PipelineOutput) for m in
+                    inputs]), 'The upstream module of `DataFrameMapper` must be `Pipeline`.'
+        transformers = []
+        next = None
+        for p in inputs:
+            next, (pipeline_name, transformer) = p.compose()
+            transformers.append((p.columns, transformer))
+
+        pv = self.param_values
+        ct = dataframe_mapper.DataFrameMapper(features=transformers, **pv)
+        return next, (self.name, ct)
