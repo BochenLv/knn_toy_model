@@ -1,14 +1,19 @@
 # -*- coding:utf-8 -*-
 """
-
+This file is the same as the orginal file in the HyperGBM, since classes and functions in
+this file are actuall not designed specifically for GBMs thus can be used broadlly for many
+differen models(estimators). These functions and classes are in fact dealing with the data 
+preprocessing and assembling them into the full-pipeline, which appear in the search space
+before the data being sent to estimators.
 """
 import numpy as np
 
-from hypergbm.cfg import HyperGBMCfg as cfg
-from hypergbm.pipeline import Pipeline
-from hypergbm.sklearn.transformers import SimpleImputer, SafeOneHotEncoder, TruncatedSVD, \
+from cfg import KnnCfg as cfg
+from pipeline import Pipeline
+from sklearn.transformers import SimpleImputer, SafeOneHotEncoder, TruncatedSVD, \
     StandardScaler, MinMaxScaler, MaxAbsScaler, RobustScaler, SafeOrdinalEncoder, \
     LogStandardScaler, DatetimeEncoder, TfidfEncoder
+
 from hypernets.core.ops import ModuleChoice, Optional, Choice
 from hypernets.tabular import column_selector
 

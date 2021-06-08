@@ -1,12 +1,14 @@
 # -*- coding:utf-8 -*-
 """
-
+This file is the same as the orginal file in the HyperGBM. The classes and functions presented
+in this file are actually defined to support those ones defined in 'sklearn_ops.py', i.e. they 
+are operations about the data preprocessing and feature engineering.
 """
 
 import numpy as np
 from sklearn import impute, preprocessing as sk_pre, decomposition
 
-from hypergbm.pipeline import HyperTransformer
+from pipeline import HyperTransformer
 from hypernets.tabular import feature_generators
 from hypernets.tabular import sklearn_ex
 

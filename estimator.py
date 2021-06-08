@@ -1,13 +1,7 @@
-import numpy as np
 import neighbors
 
 from hypernets.core.search_space import ModuleSpace
-from hypernets.tabular.column_selector import column_object_category_bool, column_zero_or_positive_int32
 
-def get_categorical_features(X):
-    cat_cols = column_object_category_bool(X)
-    cat_cols += column_zero_or_positive_int32(X)
-    return cat_cols
 
 def _default_early_stopping_rounds(estimator):
     n_estimators = getattr(estimator, 'n_estimators', None)
@@ -44,9 +38,12 @@ class HyperEstimator(ModuleSpace):
 
 class KNNClassifierWrapper(neighbors.KNeighborsClassifier):
     def fit(self, X, y, **kwargs):
-        if not kwargs.__contains__('categorical_feature'):
-            cat_cols = get_categorical_features(X)
-            kwargs['categorical_feature'] = cat_cols
+        task = self.__dict__.get('task')
+        if kwargs.get('eval_metric') is None:
+            if task is not None and task == 'multiclass':
+                kwargs['eval_metric'] = 'mlogloss'
+            else:
+                kwargs['eval_metric'] = 'logloss'
         if kwargs.get('early_stopping_rounds') is None and kwargs.get('eval_set') is not None:
             kwargs['early_stopping_rounds'] = _default_early_stopping_rounds(self)
         super(KNNClassifierWrapper, self).fit(X, y, **kwargs)
@@ -66,9 +63,8 @@ class KNNClassifierWrapper(neighbors.KNeighborsClassifier):
 
 class KNNRegressorWrapper(neighbors.KNeighborsRegressor):
     def fit(self, X, y, **kwargs):
-        if not kwargs.__contains__('categorical_feature'):
-            cat_cols = get_categorical_features(X)
-            kwargs['categorical_feature'] = cat_cols
+        if kwargs.get('eval_metric') is None:
+            kwargs['eval_metric'] = 'logloss'
         if kwargs.get('early_stopping_rounds') is None and kwargs.get('eval_set') is not None:
             kwargs['early_stopping_rounds'] = _default_early_stopping_rounds(self)
         super(KNNRegressorWrapper, self).fit(X, y, **kwargs)
@@ -95,7 +91,7 @@ class kNNEstimator(HyperEstimator):
         if weights is not None and weights != 'uniform':
             kwargs['weights'] = weights
         if algorithm is not None and algorithm != 'brute':
-            kwargs['brute'] = algorithm
+            kwargs['algorithm'] = algorithm
         if leaf_size is not None and leaf_size != 30:
             kwargs['leaf_size'] = leaf_size
         if p is not None and p != 2:

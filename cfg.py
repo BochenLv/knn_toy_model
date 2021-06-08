@@ -1,9 +1,13 @@
+"""
+Same as other models when dealing with the tabular data.
+"""
+
 from hypernets.conf import configure, Configurable, Bool, Float, Int, Enum, List
 from hypernets.tabular.sklearn_ex import DatetimeEncoder
 
 
 @configure()
-class HyperGBMCfg(Configurable):
+class KnnCfg(Configurable):
     # numeric
     numeric_pipeline_mode = \
         Enum(['simple', 'complex'], default_value='complex',

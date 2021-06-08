@@ -45,9 +45,11 @@ class toy_KNN_estimator(Estimator):
         return 
 
     def _build_model(self, space_sample):
-        """This function builds a kNN model"""
+        """This function builds a kNN model, space_sample should be a..., the
+        compile_and_forward, which is used to..., comes from ..."""
         space, _ = space_sample.compile_and_forward()
 
+        """get_outputs():this one is used to... and comes from"""
         outputs = space.get_outputs()
         assert len(outputs) == 1, 'The space can only contains 1 output.'
         assert isinstance(outputs[0], HyperEstimator), 'The output of space must be `HyperEstimator`.'
@@ -108,7 +110,7 @@ class toy_KNN_estimator(Estimator):
                     es.append((X_eval, y_eval))
                     kwargs['eval_set'] = es
 
-        self.knn_model.group_id = f'{self.knn_model.__class__.__name__}' #?
+        self.knn_model.group_id = f'{self.knn_model.__class__.__name__}' #
         self.knn_model.fit(X, y, **kwargs)
 
     def predict(self, X, **kwargs):
