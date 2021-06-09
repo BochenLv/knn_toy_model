@@ -2,10 +2,11 @@
 
 """
 import pickle
+import hypertoy
 
 from sklearn import pipeline as sk_pipeline
-from pipeline import ComposeTransformer
-from estimator import HyperEstimator
+from hypertoy.pipeline import ComposeTransformer
+from hypertoy.estimator import HyperEstimator
 
 from hypernets.model.estimator import Estimator
 from hypernets.model.hyper_model import HyperModel
