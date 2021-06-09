@@ -2,7 +2,6 @@
 
 """
 import pickle
-import re
 
 from sklearn import pipeline as sk_pipeline
 from pipeline import ComposeTransformer

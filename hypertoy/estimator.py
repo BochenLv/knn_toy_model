@@ -1,4 +1,4 @@
-from sklearn import neighbors
+#from sklearn import neighbors
 
 from hypernets.core.search_space import ModuleSpace
 
