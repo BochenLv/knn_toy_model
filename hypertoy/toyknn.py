@@ -2,7 +2,6 @@
 
 """
 import pickle
-import hypertoy
 
 from sklearn import pipeline as sk_pipeline
 from hypertoy.pipeline import ComposeTransformer
