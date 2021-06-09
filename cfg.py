@@ -1,9 +1,9 @@
 """
-Same as other models when dealing with the tabular data.
+Same for other models when dealing with the tabular data.
 """
 
-from Hypernets.hypernets.conf import configure, Configurable, Bool, Float, Int, Enum, List
-from Hypernets.hypernets.tabular.sklearn_ex import DatetimeEncoder
+from hypernets.conf import configure, Configurable, Bool, Float, Int, Enum, List
+from hypernets.tabular.sklearn_ex import DatetimeEncoder
 
 
 @configure()

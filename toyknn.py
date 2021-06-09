@@ -4,16 +4,16 @@
 import pickle
 import re
 
-from .sklearn import pipeline as sk_pipeline
-from .pipeline import ComposeTransformer
-from .estimator import HyperEstimator
+from sklearn import pipeline as sk_pipeline
+from pipeline import ComposeTransformer
+from estimator import HyperEstimator
 
-from Hypernets.hypernets.model.estimator import Estimator
-from Hypernets.hypernets.model.hyper_model import HyperModel
-from Hypernets.hypernets.tabular.cache import cache
-from Hypernets.hypernets.tabular.data_cleaner import DataCleaner
-from Hypernets.hypernets.tabular.metrics import calc_score
-from Hypernets.hypernets.utils import fs
+from hypernets.model.estimator import Estimator
+from hypernets.model.hyper_model import HyperModel
+from hypernets.tabular.cache import cache
+from hypernets.tabular.data_cleaner import DataCleaner
+from hypernets.tabular.metrics import calc_score
+from hypernets.utils import fs
 
 class toy_KNN_estimator(Estimator):
     """
