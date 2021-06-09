@@ -4,11 +4,11 @@ __author__ = 'yangjian'
 
 """
 
-from sklearn import pipeline, compose
+from .sklearn import pipeline, compose
 
-from hypernets.core.ops import ConnectionSpace
-from hypernets.core.search_space import ModuleSpace, Choice
-from hypernets.tabular import dataframe_mapper
+from Hypernets.hypernets.core.ops import ConnectionSpace
+from Hypernets.hypernets.core.search_space import ModuleSpace, Choice
+from Hypernets.hypernets.tabular import dataframe_mapper
 
 
 class HyperTransformer(ModuleSpace):

@@ -1,15 +1,15 @@
 
-from estimator import kNNEstimator
-from pipeline import DataFrameMapper
-from cfg import KnnCfg as cfg
+from .estimator import kNNEstimator
+from .pipeline import DataFrameMapper
+from .cfg import KnnCfg as cfg
 
 
-from hypergbm.sklearn.sklearn_ops import numeric_pipeline_simple, numeric_pipeline_complex, \
+from .sklearn.sklearn_ops import numeric_pipeline_simple, numeric_pipeline_complex, \
     categorical_pipeline_simple, categorical_pipeline_complex
-from hypernets.core.ops import ModuleChoice, HyperInput
-from hypernets.core.search_space import HyperSpace
-from hypernets.core.search_space import Choice
-from hypernets.tabular.column_selector import column_object
+from Hypernets.hypernets.core.ops import ModuleChoice, HyperInput
+from Hypernets.hypernets.core.search_space import HyperSpace
+from Hypernets.hypernets.core.search_space import Choice
+from Hypernets.hypernets.tabular.column_selector import column_object
 
 
 

@@ -8,9 +8,9 @@ are operations about the data preprocessing and feature engineering.
 import numpy as np
 from sklearn import impute, preprocessing as sk_pre, decomposition
 
-from pipeline import HyperTransformer
-from hypernets.tabular import feature_generators
-from hypernets.tabular import sklearn_ex
+from .pipeline import HyperTransformer
+from Hypernets.hypernets.tabular import feature_generators
+from Hypernets.hypernets.tabular import sklearn_ex
 
 
 class LogStandardScaler(HyperTransformer):

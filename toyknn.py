@@ -4,34 +4,35 @@
 import pickle
 import re
 
-from sklearn import pipeline as sk_pipeline
-from pipeline import ComposeTransformer
-
-
-#from hypergbm.pipeline import ComposeTransformer
-from hypernets.model.estimator import Estimator
-from hypernets.model.hyper_model import HyperModel
-from hypernets.tabular.cache import cache
-from hypernets.tabular.data_cleaner import DataCleaner
-from hypernets.tabular.metrics import calc_score
-from hypernets.utils import fs
+from .sklearn import pipeline as sk_pipeline
+from .pipeline import ComposeTransformer
 from .estimator import HyperEstimator
+
+from Hypernets.hypernets.model.estimator import Estimator
+from Hypernets.hypernets.model.hyper_model import HyperModel
+from Hypernets.hypernets.tabular.cache import cache
+from Hypernets.hypernets.tabular.data_cleaner import DataCleaner
+from Hypernets.hypernets.tabular.metrics import calc_score
+from Hypernets.hypernets.utils import fs
 
 class toy_KNN_estimator(Estimator):
     """
-
+    Using this class allows searching for mutiple models by modifying the searching space
+    with mutiple models accordingly rather than only including knnEstimator defined in
+    estimator.
     """
     #need more functions dealing with the tabular data, such as fit_transform_data
     def __init__(self, task, space_sample, data_cleaner_params=None):
         """
         params: 
-            data_pipeline:
-            data_cleaner_params:
-            data_cleaner:
-            pipeline_signature:
-            fit_kwargs:
-            class_balancing:
-            _build_model:
+            space_sample: a sampled search space returned by the searcher
+            data_pipeline: returned by calling self.build_pipeline
+            data_cleaner_params: whether performing data cleaning
+            data_cleaner: not None if data_cleaner_params is not None
+            pipeline_signature: not clear about this function, thus delete for now
+            fit_kwargs: 
+            class_balancing: whether performing class balancing, bool
+            _build_model: as the name implied, establishing the model
         """
         super(toy_KNN_estimator, self).__init__(space_sample=space_sample, task=task)    
         self.data_pipeline = None
@@ -46,9 +47,9 @@ class toy_KNN_estimator(Estimator):
         return 
 
     def _build_model(self, space_sample):
-        """This function builds a kNN model, space_sample should be a search space
-        returned by the seacher, the compile_and_forward, which is used to..., comes 
-        from ..."""
+        """This function builds a kNN model, space_sample should be a search space, 
+        the compile_and_forward, which is used to..., comes from search_space.
+        """
         space, _ = space_sample.compile_and_forward()
 
         """get_outputs():this one is used to... and comes from"""

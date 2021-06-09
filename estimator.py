@@ -1,6 +1,6 @@
-import neighbors
+from sklearn import neighbors
 
-from hypernets.core.search_space import ModuleSpace
+from Hypernets.hypernets.core.search_space import ModuleSpace
 
 
 def _default_early_stopping_rounds(estimator):
