@@ -1,14 +1,6 @@
 from sklearn import neighbors
 
-from Hypernets.hypernets.core.search_space import ModuleSpace
-
-
-def _default_early_stopping_rounds(estimator):
-    n_estimators = getattr(estimator, 'n_estimators', None)
-    if isinstance(n_estimators, int):
-        return max(5, n_estimators // 20)
-    else:
-        return None
+from hypernets.core.search_space import ModuleSpace
 
 class HyperEstimator(ModuleSpace):
     def __init__(self, fit_kwargs, space=None, name=None, **hyperparams):
@@ -44,8 +36,6 @@ class KNNClassifierWrapper(neighbors.KNeighborsClassifier):
                 kwargs['eval_metric'] = 'mlogloss'
             else:
                 kwargs['eval_metric'] = 'logloss'
-        if kwargs.get('early_stopping_rounds') is None and kwargs.get('eval_set') is not None:
-            kwargs['early_stopping_rounds'] = _default_early_stopping_rounds(self)
         super(KNNClassifierWrapper, self).fit(X, y, **kwargs)
 
     def predict_proba(self, X, **kwargs):
@@ -65,8 +55,6 @@ class KNNRegressorWrapper(neighbors.KNeighborsRegressor):
     def fit(self, X, y, **kwargs):
         if kwargs.get('eval_metric') is None:
             kwargs['eval_metric'] = 'logloss'
-        if kwargs.get('early_stopping_rounds') is None and kwargs.get('eval_set') is not None:
-            kwargs['early_stopping_rounds'] = _default_early_stopping_rounds(self)
         super(KNNRegressorWrapper, self).fit(X, y, **kwargs)
 
     def predict(self, X, **kwargs):
