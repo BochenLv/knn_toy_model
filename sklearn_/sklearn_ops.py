@@ -7,11 +7,10 @@ preprocessing and assembling them into the full-pipeline, which appear in the se
 before the data being sent to estimators.
 """
 import numpy as np
-from hypertoy.search_space import sear_space_eg
 
 from hypertoy.cfg import KnnCfg as cfg
 from hypertoy.pipeline import Pipeline
-from sklearn.transformers import SimpleImputer, SafeOneHotEncoder, TruncatedSVD, \
+from sklearn_.transformers import SimpleImputer, SafeOneHotEncoder, TruncatedSVD, \
     StandardScaler, MinMaxScaler, MaxAbsScaler, RobustScaler, SafeOrdinalEncoder, \
     LogStandardScaler, DatetimeEncoder, TfidfEncoder
 

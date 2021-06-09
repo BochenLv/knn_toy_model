@@ -3,8 +3,8 @@
 #suppose that I also have a search space given by get_search_space()
 
 
-from toyknn import toy_KNN
-from search_space import search_space_eg
+from hypertoy.toyknn import toy_KNN
+from hypertoy.search_space import search_space_eg
 from hypernets.searchers import RandomSearcher
 
 

@@ -1,10 +1,10 @@
 
-from estimator import kNNEstimator
-from pipeline import DataFrameMapper
-from cfg import KnnCfg as cfg
+from hypertoy.estimator import kNNEstimator
+from hypertoy.pipeline import DataFrameMapper
+from hypertoy.cfg import KnnCfg as cfg
 
 
-from sklearn.sklearn_ops import numeric_pipeline_simple, numeric_pipeline_complex, \
+from sklearn_.sklearn_ops import numeric_pipeline_simple, numeric_pipeline_complex, \
     categorical_pipeline_simple, categorical_pipeline_complex
 from hypernets.core.ops import ModuleChoice, HyperInput
 from hypernets.core.search_space import HyperSpace
