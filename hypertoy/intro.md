@@ -22,7 +22,7 @@ model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
 To help the readers walk through these steps, we provide in the next subsection deploying k-nearest neighbors with the ```Hypernets``` as a simple example to examine details behind each line of the above codes.
 ### Designing a search space
-The search space consists of two key components: the preprocessor, which focuses on the data preprocessing and the feature engineerings, and the estimators, which will be defined [later](# Constructing the Hypermodel to receive the searcher)
+The search space consists of two key components: the preprocessor, which focuses on the data preprocessing and the feature engineerings, and the estimators, which will be defined [later](#Constructing the Hypermodel to receive the searcher)
 ### Choosing a searcher
 
 ### Constructing the Hypermodel to receive the searcher
