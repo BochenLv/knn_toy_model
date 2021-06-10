@@ -31,11 +31,6 @@ class HyperEstimator(ModuleSpace):
 class KNNClassifierWrapper(neighbors.KNeighborsClassifier):
     def fit(self, X, y, **kwargs):
         task = self.__dict__.get('task')
-        if kwargs.get('eval_metric') is None:
-            if task is not None and task == 'multiclass':
-                kwargs['eval_metric'] = 'mlogloss'
-            else:
-                kwargs['eval_metric'] = 'logloss'
         super(KNNClassifierWrapper, self).fit(X, y, **kwargs)
 
     def predict_proba(self, X, **kwargs):
@@ -53,8 +48,6 @@ class KNNClassifierWrapper(neighbors.KNeighborsClassifier):
 
 class KNNRegressorWrapper(neighbors.KNeighborsRegressor):
     def fit(self, X, y, **kwargs):
-        if kwargs.get('eval_metric') is None:
-            kwargs['eval_metric'] = 'logloss'
         super(KNNRegressorWrapper, self).fit(X, y, **kwargs)
 
     def predict(self, X, **kwargs):
