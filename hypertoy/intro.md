@@ -7,12 +7,16 @@ To apply your end-to-end AutoML models built with the Hypernets, the readers usu
 from sklearn.model_selection import train_test_split
 X, y = load_your_data()
 X_train, y_train, X_test, y_test = train_test_split(X, y, test_size=0.1)
+
 #Define a search space
 search_space = get_your_search_space
+
 #Choose a searcher from the Hypernets.searchers
 searcher = Your_searcher(search_space, other_arguments)
+
 #Pass the searcher as an argument to your model, a Hypermodel object
 model = Your_Hypermodel(searcher, task='multiclass', other_arguments)
+
 #Call the 'search' method
 model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
