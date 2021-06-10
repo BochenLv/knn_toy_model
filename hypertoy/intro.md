@@ -22,10 +22,14 @@ model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
 To help the readers walk through these steps, we provide in the next subsection deploying k-nearest neighbors with the ```Hypernets``` as a simple example to examine details behind each line of the above codes.
 ### Designing a search space
+<<<<<<< HEAD
 The search space consists of two key components: the preprocessor, which focuses on the data preprocessing and the feature engineerings such that the data and features can be treated by the estimators properly, and the estimators, which will be discussed [later](#sec_model). Here we simply assume that the estimators are magically provided. 
 
 Preprocessors in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not to be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```.
 
+=======
+The search space consists of two key components: the preprocessor, which focuses on the data preprocessing and the feature engineerings, and the estimators, which will be discussed [later](#sec_model)
+>>>>>>> c0ebd5b29ad85068f6e3f2aa2b1fc6ddabd23e0b
 ### Choosing a searcher
 
 ### Constructing the Hypermodel to receive the searcher<span id=sec_model> 
