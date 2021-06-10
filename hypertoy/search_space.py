@@ -107,8 +107,10 @@ class KNNSearchSpaceGenerator(SearchSpaceGenerator):
     def default_knn_fit_kwargs(self):
         return {}
 
+    @property
     def estimators(self):
-        r = {'knn': (kNNEstimator, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)}
+        r = {}
+        r['knn'] = (kNNEstimator, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)
         return r
 
 search_space_eg = KNNSearchSpaceGenerator()
