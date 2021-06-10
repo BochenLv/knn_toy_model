@@ -17,10 +17,10 @@ from hypernets.utils import fs
 class toy_KNN_estimator(Estimator):
     """
     Using this class allows searching for mutiple models by modifying the searching space
-    with mutiple models accordingly rather than only including knnEstimator defined in
+    accordingly rather than only including knnEstimator defined in
     estimator.
     """
-    #need more functions dealing with the tabular data, such as fit_transform_data
+    
     def __init__(self, task, space_sample, data_cleaner_params=None):
         """
         params: 
@@ -104,7 +104,7 @@ class toy_KNN_estimator(Estimator):
     def transform_data(self, X, y):
         if self.data_cleaner is not None:
             X = self.data_cleaner.transform(X)
-        X = self.data_pipeline.transform(X)
+        X = self.data_pipeline.transform(X,y)
         return  X
 
     def get_iteration_scores(self):
