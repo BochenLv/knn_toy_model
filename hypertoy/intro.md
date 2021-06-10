@@ -20,12 +20,11 @@ model = Your_Hypermodel(searcher, task='multiclass', other_arguments)
 #Call the 'search' method
 model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
-
+To help the readers walk through these steps, we provide in the next subsection deploying k-nearest neighbors with the Hypernets as a simple example to examine details behind each line of the above codes.
 ### Designing a search space
+```abc```
+### Choosing a searcher
 
-### Constructing a toy_kNN as the Hypermodel and searching the search space 
+### Constructing the Hypermodel to receive the searcher
 
-### Evaluating the Hypermodel with Estimator
-
-### Get your best model
-try save
+### Evaluating the Hypermodel
