@@ -107,6 +107,7 @@ class toy_KNN_estimator(Estimator):
         X = self.data_pipeline.transform(X)
         return  X
 
+    
     def get_iteration_scores(self):
         iteration_scores = {}
 

@@ -1,5 +1,5 @@
 """
-Same for other models when dealing with the tabular data.
+Same for other models as long as we are still dealing with the tabular data.
 """
 
 from hypernets.conf import configure, Configurable, Bool, Float, Int, Enum, List
