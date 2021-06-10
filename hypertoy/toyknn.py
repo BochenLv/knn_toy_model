@@ -101,10 +101,10 @@ class toy_KNN_estimator(Estimator):
         X = self.data_pipeline.fit_transform(X, y)
         return X
 
-    def transform_data(self, X, y):
+    def transform_data(self, X, y=None):
         if self.data_cleaner is not None:
             X = self.data_cleaner.transform(X)
-        X = self.data_pipeline.transform(X,y)
+        X = self.data_pipeline.transform(X)
         return  X
 
     def get_iteration_scores(self):
@@ -123,7 +123,7 @@ class toy_KNN_estimator(Estimator):
 
     def fit(self, X, y, **kwargs):
         X = self.fit_transform_data(X, y)
-
+        
         eval_set = kwargs.pop('eval_set', None)
         kwargs = self.fit_kwargs
         if eval_set is None:
