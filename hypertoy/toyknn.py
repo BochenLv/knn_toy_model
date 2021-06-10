@@ -123,7 +123,7 @@ class toy_KNN_estimator(Estimator):
 
     def fit(self, X, y, **kwargs):
         X = self.fit_transform_data(X, y)
-        
+
         eval_set = kwargs.pop('eval_set', None)
         kwargs = self.fit_kwargs
         if eval_set is None:
@@ -174,7 +174,23 @@ class toy_KNN_estimator(Estimator):
             return model
 
     def __getstate__(self):
-        raise NotImplementedError
+        try:
+            state = super().__getstate__()
+        except AttributeError:
+            state = self.__dict__.copy()
+        # Don't pickle eval_set and sample_weight
+        fit_kwargs = state.get('fit_kwargs')
+        if fit_kwargs is not None and 'eval_set' in fit_kwargs.keys():
+            fit_kwargs = fit_kwargs.copy()
+            fit_kwargs.pop('eval_set')
+            state['fit_kwargs'] = fit_kwargs
+        if fit_kwargs is not None and 'sample_weight' in fit_kwargs.keys():
+            fit_kwargs = fit_kwargs.copy()
+            fit_kwargs.pop('sample_weight')
+            state['fit_kwargs'] = fit_kwargs
+
+        return state
+
 
 class toy_KNN(HyperModel):
     """
