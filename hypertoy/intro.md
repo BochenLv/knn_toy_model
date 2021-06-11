@@ -11,7 +11,7 @@ X_train, y_train, X_test, y_test = train_test_split(X, y, test_size=0.1)
 #Design a search space
 search_space = get_your_search_space
 
-#Choose a searcher from the ```Hypernets```.searchers
+#Choose a searcher from the Hypernets searchers
 searcher = Your_searcher(search_space, other_arguments)
 
 #Pass the searcher as an argument to your model, a Hypermodel object
@@ -28,12 +28,12 @@ The search space, an object of ```Hyperspace``` defined in the ```Hypernets```, 
 
 Likewise, the **estimators** in the search space are created by calling the function ```create_estimators```, which, on the other hand, needs to be carefully modified for your spcific models, i.e. k-nearest neighbors here. 
 
-We now define a class ```SearchSpaceGenerator``` which has the above functions as its methods for the purpose of designing a specific search space. Moreover, to conveniently manipulate the initializations of the models or even inlcude other models defined in scikit-learn such as support vector machines into our searchs space, we can further define a subclass of ```SearchSpaceGenerator```, which can be named as "YourModelSearchSpaceGenerator" and summarized as follows:
+We now define a class ```SearchSpaceGenerator``` which has the above functions as its methods for the purpose of designing a specific search space. Moreover, to conveniently manipulate the initializations of the models or even inlcude other models defined in scikit-learn such as support vector machines into our search space, we can further define a subclass of ```SearchSpaceGenerator```, which can be named as "YourModelSearchSpaceGenerator" and summarized as follows:
 ```python
 class YourModelSearchSpaceGenerator(SearchSpaceGenerator):
     """
     enable_your_model1: bool, set this as True to include model1 in the search space.
-    enable_your_model2: bool, set this as True to include model1 in the search space.
+    enable_your_model2: bool, set this as True to include model2 in the search space.
     The readers can also add more models
     """
     def __init__(self, enable_your_model1=True, enable_your_model2=True, **kwargs):
