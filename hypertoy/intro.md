@@ -103,7 +103,7 @@ class KNNSearchSpaceGenerator(SearchSpaceGenerator):
         r['knn'] = (kNNEstimator, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)
         return r
 ```
- Following the above way, readers can define their own search space by modifying this file or ```search_space.py``` of the ```HyperGMB``` accordingly.
+ Following the same way, readers can define their own search space by modifying this file or ```search_space.py``` of the ```HyperGMB``` accordingly.
 
 ### Choosing a searcher
 Since many efficient searchers have already been provided in the ```Hypernets```,  it is fairly easy for the readers to simply choose one of them and send the search space you just defined to this searcher. For example,
@@ -113,6 +113,9 @@ searcher = RandomSearcher(search_space)
 One can also take more efforts to design new kinds of searcher by refering to [Searcher](#sec_searcher).
 
 ### Constructing the Hypermodel to receive the searcher<span id=sec_model> 
-This section devotes to building the ```Hypermodel```, which is named as ```toy_KNN```
-for our example. It is also not hard for the readers to build their ```Hypermodel``` with models other than the k-nearest neighbors by following steps discusssed in this section. 
+This section devotes to building the ```HyperYourModel```, which is inherited from the ```Hypermodel``` of the ```Hypernets```. For our example here, this is simply named as ```toy_KNN```. It is not hard for the readers to build ```HyperYourModel``` with models other than the k-nearest neighbors by following steps discusssed in this section. 
+
+Basically, to define a ```HyperYourModel```, one should define two functions properly: 
+1.a
+2.b
 ### Evaluating the Hypermodel
