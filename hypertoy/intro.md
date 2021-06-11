@@ -116,6 +116,11 @@ One can also take more efforts to design new kinds of searcher by refering to [S
 This section devotes to building the ```HyperYourModel```, which is inherited from the ```Hypermodel``` of the ```Hypernets```. For our example here, this is simply named as ```toy_KNN```. It is not hard for the readers to build ```HyperYourModel``` with models other than the k-nearest neighbors by following steps discusssed in this section. 
 
 Basically, to define a ```HyperYourModel```, one should define two functions properly: 
-1.a
-2.b
+1. ```python 
+    def _get_estimator(space_sample):
+        #space_sample, a Hyperspace, is returned by a searcher, and is an example of the search space
+        estimator = HyperYourModelEstimator(some_args)
+        return estimator
+    ```
+2. b
 ### Evaluating the Hypermodel
