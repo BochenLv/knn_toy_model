@@ -115,17 +115,17 @@ One can also take more efforts to design new kinds of searcher by refering to [S
 ### Constructing the Hypermodel to receive the searcher<span id=sec_model> 
 This section devotes to constructing the ```HyperYourModel```, which is inherited from the ```Hypermodel``` of the ```Hypernets```. For our example here, this is simply named as ```toy_KNN```. It is not hard for the readers to build ```HyperYourModel``` with models other than the k-nearest neighbors by following steps discusssed in this section. 
 
-Basically, to define a class ```HyperYourModel```, one should define two functions properly: 
+Basically, to define a class ```HyperYourModel```, one needs to define two functions properly: 
 1. A function which returns the estimator of the HyperYourModel in the search space     returned by the searcher
     ```python 
     def _get_estimator(space_sample):
-        #space_sample, a Hyperspace, is returned by a searcher, and is an example of the search space
+        #space_sample, a Hyperspace, is returned by a searcher, and is an insatance of the search space
         estimator = HyperYourModelEstimator(some_args)
         return estimator
     ```
 This function overwrites the ```_get_estimator``` method of the ```Hypermodel```, from which the ```HyperYourModel``` is inherited. 
 
-2. A function which loads and returns the desired model, for example
+2. A function which loads and returns the HyperEstimator for the desired model, for example
     ```python
     def load_estimator(self, model_file):
         #load the details of the model from the model_file
