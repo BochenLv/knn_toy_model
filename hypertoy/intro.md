@@ -124,6 +124,7 @@ Basically, to define a class ```HyperYourModel```, one should define two functio
         return estimator
     ```
 This function overwrites the ```_get_estimator``` method of the ```Hypermodel```, from which the ```HyperYourModel``` is inherited. 
+
 2. A function which loads and returns the desired model, for example
     ```python
     def load_estimator(self, model_file):
