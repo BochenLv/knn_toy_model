@@ -26,11 +26,11 @@ To help the readers walk through these steps, we provide in the next subsection 
 ### Designing a search space
 The search space, an object of the ```Hyperspace``` defined in the ```Hypernets```, is composed of two key components: the ***preprocessor***, which focuses on the data preprocessing and the feature engineerings such that the data and features can be treated by the estimators properly, and the ***estimators***, whose implementation details will be discussed [later](#sec_model) and here we simply assume that the estimators are magically provided. Therefore, to successfully design a search space, we need a ```SearchSpaceGenerator``` to wrap these two components as a whole. 
 
-**Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not to be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. Readers can also modify the ```create_preprocessor``` to manipulate the preprocessings of thedata. 
+**Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not to be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. Readers can also modify the ```create_preprocessor``` to manipulate the preprocessings of the data. 
 
 Likewise, the **estimators** in the search space are created by calling the function ```create_estimators```, which, on the other hand, needs to be carefully modified for your spcific models, i.e. k-nearest neighbors here. 
 
-We now define a class ```SearchSpaceGenerator``` which has the above functions as its methods for the purpose of designing a specific search space. Moreover, to conveniently manipulate the initializations of the models or even inlcude other models defined in scikit-learn such as support vector machines into our search space, we can further define a subclass of ```SearchSpaceGenerator```, which can be named as "YourModelSearchSpaceGenerator" and summarized as follows:
+Now we can define a class ```SearchSpaceGenerator``` which has the above functions as its methods for the purpose of designing a specific search space. Moreover, to conveniently manipulate the initializations of the models or even inlcude other models defined in scikit-learn such as support vector machines into our search space, we can further define a subclass of ```SearchSpaceGenerator```, which can be named as "YourModelSearchSpaceGenerator" and summarized as follows:
 ```python
 class YourModelSearchSpaceGenerator(SearchSpaceGenerator):
     """
@@ -76,15 +76,43 @@ Finally, a search space can be created in the following way
 ```python
 get_your_search_space = YourModelSearchSpaceGenerator()
 ```
-More details for the search space of the k-nearest neighbors are presented in ```search_space.py```. Following the above way, readers can define their own search space by modifying this file or ```search_space.py``` of the ```HyperGMB``` accordingly.
+Details for the search space of the k-nearest neighbors are presented in ```search_space.py```, where the class ```KNNSearchSpaceGenerator``` is structured as
+```python
+class KNNSearchSpaceGenerator(SearchSpaceGenerator):
+    def __init__(self, **kwargs):
+        super(KNNSearchSpaceGenerator, self).__init__(**kwargs)
+
+    @property
+    def default_knn_init_kwargs(self):
+        return {'n_neighbors': Choice([1, 3, 5]),
+                'weights': Choice(['uniform', 'distance']),
+                'algorithm': Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
+                'leaf_size': Choice([10, 20 ,30]),
+                'p': Choice([1, 2]),
+                'metric': 'minkowski',
+                'metric_params': None,
+                'n_jobs': None}
+    
+    @property
+    def default_knn_fit_kwargs(self):
+        return {}
+
+    @property
+    def estimators(self):
+        r = {}
+        r['knn'] = (kNNEstimator, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)
+        return r
+```
+ Following the above way, readers can define their own search space by modifying this file or ```search_space.py``` of the ```HyperGMB``` accordingly.
 
 ### Choosing a searcher
-Since many efficient searchers have already been provided in the ```Hypernets```,  it is fairly easy for the readers to simply choose one of them and pass the search space you just defined to this searcher. For example,
+Since many efficient searchers have already been provided in the ```Hypernets```,  it is fairly easy for the readers to simply choose one of them and send the search space you just defined to this searcher. For example,
 ```python
 searcher = RandomSearcher(search_space)
 ```
 One can also take more efforts to design new kinds of searcher by refering to [Searcher](#sec_searcher).
 
 ### Constructing the Hypermodel to receive the searcher<span id=sec_model> 
-
+This section devotes to building the ```Hypermodel```, which is named as ```toy_KNN```
+for our example. It is also not hard for the readers to build their ```Hypermodel``` with models other than the k-nearest neighbors by following steps discusssed in this section. 
 ### Evaluating the Hypermodel
