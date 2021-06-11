@@ -24,7 +24,7 @@ To help the readers walk through these steps, we provide in the next subsection 
 ### Designing a search space
 The search space, an object of ```Hyperspace``` defined in the ```Hypernets```, is composed of two key components: the preprocessor, which focuses on the data preprocessing and the feature engineerings such that the data and features can be treated by the estimators properly, and the estimators, which will be discussed [later](#sec_model). Here we simply assume that the estimators are magically provided. 
 
-**Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not to be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. 
+**Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not to be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. Readers can also modify the ```create_preprocessor``` to manipulate the preprocessings of thedata. 
 
 Likewise, the **estimators** in the search space are created by calling the function ```create_estimators```, which, on the other hand, needs to be carefully modified for your spcific models, i.e. k-nearest neighbors here. 
 
@@ -70,8 +70,11 @@ class YourModelSearchSpaceGenerator(SearchSpaceGenerator):
             r['your_model2'] = (your_model2Estimator, self.your_model2_init_kwargs, self.your_model2_fit_kwargs)
         return r
 ```
-
-
+Finally, a search space can be created in the following way
+```python
+get_your_search_space = YourModelSearchSpaceGenerator()
+```
+More details for the model k-nearest neighbors are presented in ```search_space.py```. Following the above way, readers can define their own search space by modifying this file or ```search_space.py``` of ```HyperGMB``` accordingly.
 
 ### Choosing a searcher
 
