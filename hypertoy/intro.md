@@ -131,5 +131,5 @@ This function overwrites the ```_get_estimator``` method of the ```Hypermodel```
         assert model_file is not None
         return HyperYourModelEstimator.load(model_file)
     ```
-aaa
+abc
 ### Evaluating the Hypermodel
