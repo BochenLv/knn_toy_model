@@ -1,7 +1,7 @@
 Generally speaking, using ```Hypernets``` to implement your own AutoML task consists of several key components, of which the most important ones are designing your own search space which has the form of a Hyperspace, the Hypermodel which is sampled from the search space using a searcher and the Estimator which recieves a Hypermodel, evaluates it and then returns the corresponding rewards such that the searcher can update the returned Hypermodel based on the rewards. We introduce the way of designing search space in Section \ref. Then we focus on the Hypermodel in Section \ref. Discussion about how an Estimator works is presented in Section \ref. Finally, we provide a toy example, designing an autoML task with k-Nearest Neighbour, to help the readers walk through the full pipeline of implementing ```Hypernets``` to your own tasks.
 
 ## Easy deploying of your AutoML task
-To apply your end-to-end AutoML models built with the ```Hypernets```, the readers usually first ==design a search space==, which mainly includes transformations of the data, feature engineerings, and the desired estimators, the most important part and the major work you did for designing your AutoML model with the ```Hypernets```. With this search space in hand, the readers then choose a searcher from those defined in the ```Hypernets```, such as ```RandomSearcher```, whose major functionality is to repeatedly 'search' samples from the search space. This searcher is then passed as an argument to your model, a ```Hypermodel``` object. Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: searching in the search space, sampling a full-pipeline model from the search space, fitting the sampled model, evaluating its performance, and then updating the searcher until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
+To apply your end-to-end AutoML models built with the ```Hypernets```, the readers usually first design a search space, which mainly includes transformations of the data, feature engineerings, and the desired estimators, the most important part and the major work you did for designing your AutoML model with the ```Hypernets```. With this search space in hand, the readers then choose a searcher from those defined in the ```Hypernets```, such as ```RandomSearcher```, whose major functionality is to repeatedly 'search' samples from the search space. This searcher is then passed as an argument to your model, a ```Hypermodel``` object. Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: searching in the search space, sampling a full-pipeline model from the search space, fitting the sampled model, evaluating its performance, and then updating the searcher until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
 ```python
 #Load the data and suppose that the task is multi-classification
 from sklearn.model_selection import train_test_split
@@ -22,11 +22,57 @@ model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
 To help the readers walk through these steps, we provide in the next subsection deploying k-nearest neighbors with the ```Hypernets``` as a simple example to examine details behind each line of the above codes.
 ### Designing a search space
-The search space consists of two key components: the preprocessor, which focuses on the data preprocessing and the feature engineerings such that the data and features can be treated by the estimators properly, and the estimators, which will be discussed [later](#sec_model). Here we simply assume that the estimators are magically provided. 
+The search space, an object of ```Hyperspace``` defined in the ```Hypernets```, is composed of two key components: the preprocessor, which focuses on the data preprocessing and the feature engineerings such that the data and features can be treated by the estimators properly, and the estimators, which will be discussed [later](#sec_model). Here we simply assume that the estimators are magically provided. 
 
-Preprocessors in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not to be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```.
+**Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not to be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. 
 
-The search space consists of two key components: the preprocessor, which focuses on the data preprocessing and the feature engineerings, and the estimators, which will be discussed [later](#sec_model)
+Likewise, the **estimators** in the search space are created by calling the function ```create_estimators```, which, on the other hand, needs to be carefully modified for your spcific models, i.e. k-nearest neighbors here. 
+
+We now define a class ```SearchSpaceGenerator``` which has the above functions as its methods for the purpose of designing a specific search space. Moreover, to conveniently manipulate the initializations of the models or even inlcude other models defined in scikit-learn such as support vector machines into our searchs space, we can further define a subclass of ```SearchSpaceGenerator```, which can be named as "YourModelSearchSpaceGenerator" and summarized as follows:
+```python
+class YourModelSearchSpaceGenerator(SearchSpaceGenerator):
+    """
+    enable_your_model1: bool, set this as True to include model1 in the search space.
+    enable_your_model2: bool, set this as True to include model1 in the search space.
+    The readers can also add more models
+    """
+    def __init__(self, enable_your_model1=True, enable_your_model2=True, **kwargs):
+        super(YourModelSearchSpaceGenerator, self).__init__(**kwargs)
+
+    #the default initialized parameters for model1, Choice will iterate overe these parameters.
+    @property
+    def your_model1_init_kwargs(self):
+        return {'your_model1_param1': Choice([1, 2, 3]),
+                'your_model1_param2': Choice(['good', 'great']),
+                'your_model1_param3': None}
+    
+    #the default initialized parameters for model2
+    @property
+    def your_model2_init_kwargs(self):
+        return {'your_model2_param1': Choice([4, 5, 6]),
+                'your_model2_param2': Choice(['trivial', 'nontrivial'])}
+
+    @property
+    def your_model1_fit_kwargs(self):
+        return {}
+
+    @property
+    def your_model2_fit_kwargs(self):
+        return {}
+
+    #return the defined estimators along with their initializations, your_model1Estimator and your_model2Estimator are assumed to be magically provided for now.
+    @property
+    def estimators(self):
+        r = {}
+        if self.enable_your_model1 = True:
+            r['your_model1'] = (your_model1Estimator, self.your_model1_init_kwargs, self.your_model1_fit_kwargs)
+        if self.enable_your_model2 = True:
+            r['your_model2'] = (your_model2Estimator, self.your_model2_init_kwargs, self.your_model2_fit_kwargs)
+        return r
+```
+
+
+
 ### Choosing a searcher
 
 ### Constructing the Hypermodel to receive the searcher<span id=sec_model> 
