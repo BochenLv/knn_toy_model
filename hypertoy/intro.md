@@ -135,4 +135,4 @@ Basically, to define a class ```HyperYourModel```, one needs to define two funct
     abc
     cde
     fg
-### Evaluating the Hypermodel
+### Calling the ```search``` method
