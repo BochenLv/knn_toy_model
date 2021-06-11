@@ -123,7 +123,7 @@ Basically, to define a class ```HyperYourModel```, one needs to define two funct
         estimator = HyperYourModelEstimator(some_args)
         return estimator
     ```
-    This function overwrites the ```_get_estimator``` method of the ```Hypermodel```, from which the ```HyperYourModel``` is inherited. The uniqueness of each ```HyperYourModel```, e.g. the Hypermodels with k-nearest neighbors or support vector machines, is provided by the class ```HyperYourModelEstimator``` which we will discuss now and is named as ```toy_KNN_estimator``` for our example of k-nearest neighbors. 
+    This function overwrites the ```_get_estimator``` method of the ```Hypermodel```, from which the ```HyperYourModel``` is inherited. The uniqueness of each ```HyperYourModel```, e.g. the Hypermodels with k-nearest neighbors or support vector machines, is provided by the class ```HyperYourModelEstimator``` which we will discuss now and is named as ```toy_KNN_estimator``` for our example of k-nearest neighbors. Although a ```HyperYourModelEstimator``` usually includes many arguments and methods to support some advanced features of ```Hypernets```, fortunately, we need not completely write everything from scratch since many of them have already been provided in the ```HyperGMB``` package. 
 
 2. A function which loads and returns the HyperEstimator for the desired model, for example
     ```python
