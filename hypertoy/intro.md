@@ -3,7 +3,7 @@ Generally speaking, using the ```Hypernets``` to implement your own AutoML task 
 ## Searcher<span id=sec_searcher>
 
 ## Easy deploying of your AutoML task<span id=sec_eg>
-To apply your end-to-end AutoML models built with the ```Hypernets```, the readers usually first design a search space, which mainly includes transformations of the data, feature engineerings, and the desired estimators, the most important part and the primary work you will do for designing your AutoML model with the ```Hypernets```. With this search space in hand, the readers then choose a searcher from those defined in the ```Hypernets```, such as ```RandomSearcher```, whose functionality is to repeatedly 'search' samples from the search space. This searcher is then passed as an argument to your model, a ```Hypermodel``` object. Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: searching in the search space, sampling a full-pipeline model from the search space, fitting the sampled model, evaluating its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
+To apply your end-to-end AutoML models built with the ```Hypernets```, the readers usually first design a search space, which mainly includes transformations of the data, feature engineerings, and the desired estimators, the most important part and the primary work you will do for designing your AutoML model with the ```Hypernets```. With this search space in hand, the readers then choose a searcher from those defined in the ```Hypernets```, such as ```RandomSearcher```, whose functionality is to repeatedly 'search' samples from the search space. This searcher is then passed as an argument to your model, a ```Hypermodel``` object. Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: searching in the search space, sampling a full-pipeline model from the search space, fitting the sampled model of the search space, evaluating its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
 ```python
 #Load the data and suppose that the task is multi-classification
 from sklearn.model_selection import train_test_split
@@ -123,7 +123,7 @@ Basically, to define a class ```HyperYourModel```, one needs to define two funct
         estimator = HyperYourModelEstimator(some_args)
         return estimator
     ```
-    This function overwrites the ```_get_estimator``` method of the ```Hypermodel```, from which the ```HyperYourModel``` is inherited. 
+    This function overwrites the ```_get_estimator``` method of the ```Hypermodel```, from which the ```HyperYourModel``` is inherited. The uniqueness of each ```HyperYourModel```, e.g. the Hypermodels with k-nearest neighbors or support vector machines, is provided by the class ```HyperYourModelEstimator``` which we will discuss now and is named as ```toy_KNN_estimator``` for our example of k-nearest neighbors. 
 
 2. A function which loads and returns the HyperEstimator for the desired model, for example
     ```python
