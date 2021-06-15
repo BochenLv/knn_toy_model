@@ -24,7 +24,7 @@ model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
 To help the readers walk through these steps, we provide in the following subsections deploying k-nearest neighbors with the ```Hypernets``` as a simple example to examine details behind each line of the above codes.
 ### Designing a search space
-The search space, an object of the ```Hyperspace``` defined in the ```Hypernets```, is composed of two key components: the ***preprocessor***, which focuses on the data preprocessing and the feature engineerings such that the data and features can be treated by the estimators properly, and the ***estimators***, whose implementation details will be discussed [later](#sec_model) and here we simply assume that the estimators are magically provided. Therefore, to successfully design a search space, we need a ```SearchSpaceGenerator``` to wrap these two components as a whole. 
+The search space, an object of the ```Hyperspace``` defined in the ```Hypernets```, is composed of two important components: the ***preprocessor***, which focuses on the data preprocessing and the feature engineerings such that the data and features can be treated by the estimators properly, and the ***estimators***, whose implementation details will be discussed [later](#sec_model) and here we simply assume that the estimators are magically provided. Therefore, to successfully design a search space, we need a ```SearchSpaceGenerator``` to wrap these two components as a whole. 
 
 **Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not to be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. Readers can also modify the ```create_preprocessor``` to manipulate the preprocessings of the data. 
 
@@ -113,21 +113,21 @@ searcher = RandomSearcher(search_space)
 One can also take more efforts to design new kinds of searcher by refering to [Searcher](#sec_searcher).
 
 ### Constructing the Hypermodel to receive the searcher<span id=sec_model> 
-This section needs additional attentions for its importance. Here, we devotes to constructing the ```HyperYourModel```, which is inherited from the ```Hypermodel``` of the ```Hypernets```. For our example of k-nearest neighbors, this is simply named as ```toy_KNN```. It is not hard for the readers to build ```HyperYourModel``` with models other than the k-nearest neighbors by following steps discusssed in this section. 
+This section needs additional attentions for its importance. Here, we devotes to constructing the ```HyperYourModel``` of your task, which is an object inherited from the ```Hypermodel``` of the ```Hypernets```. For our example of k-nearest neighbors, this is simply named as ```toy_KNN```. It is not hard for the readers to build ```HyperYourModel``` with models other than the k-nearest neighbors by following steps discusssed in this section. 
 
 Basically, to define a class ```HyperYourModel```, one needs to define two functions properly: 
-1. A function which returns the estimator of the HyperYourModel in the search space       returned by the searcher
+1. A function which returns the estimator of the HyperYourModel from the search space returned by the searcher
     ```python 
     def _get_estimator(space_sample):
         #space_sample, a Hyperspace, is returned by a searcher
         estimator = HyperYourModelEstimator(some_args)
-        return estimator
+        return estimator 
     ```
-    This function overwrites the ```_get_estimator``` method of the ```Hypermodel```, from which the ```HyperYourModel``` is inherited. 
+    This function overwrites the ```_get_estimator``` method of the ```Hypermodel```, from which the ```HyperYourModel``` is inherited. One may immediately notice that the returned estimatos are actually ```HyperYourModelEstimator```, not the typical "estimator" which usually refers to some m 
     
-    The uniqueness of each ```HyperYourModel```, e.g. the Hypermodels with k-nearest neighbors or support vector machine, is provided by the class ```HyperYourModelEstimator``` through utilizing different search space returned by the searcher. We discuss this uniqueness now and name our special HyperYourModelEstimator as ```toy_KNN_estimator``` since we are taking the k-nearest neighbors as our example. Although a ```HyperYourModelEstimator``` usually includes many arguments and functions to support some advanced features of ```Hypernets```, fortunately, there is nearly nothing needs to be rewritten from scratch for the reason that many of the arguments and functions have already been provided in the ```HyperGBMEstimator``` of the ```HyperGMB``` package. The more deep reason for this convenience lies in the fact that the ```HyperYourModelEstimator``` should be a more general "estimator" which not only includes the typical estimators, i.e. machine learning models, but also the whole pipeline from the data transformations to the machine learning models, where the steps before introducing these machine learning models to the pipeliine are usually common in different cases. The uniqueness is then due to the new estimators, i.e. machine learning models, that you include into your search space when when it is designed and was assumed to be magically provided there. 
+    The uniqueness of each ```HyperYourModel```, e.g. the Hypermodels with k-nearest neighbors or support vector machine, is provided by the class ```HyperYourModelEstimator``` through receiving different search space returned by the searcher. We discuss this uniqueness now and name our special HyperYourModelEstimator as ```toy_KNN_estimator``` since we are taking the k-nearest neighbors as our example. Although a ```HyperYourModelEstimator``` usually includes many arguments and functions to support some advanced features of ```Hypernets```, fortunately, there is nearly nothing needs to be rewritten from scratch for the reason that many of the arguments and functions have already been provided in the ```HyperGBMEstimator``` of the ```HyperGMB``` package. The more deep reason for this convenience lies in the fact that the ```HyperYourModelEstimator``` should be a more general "estimator" which not only includes the typical estimators, i.e. machine learning models, but also the whole pipeline from the data transformations to the machine learning models, where the steps before introducing these machine learning models to the pipeliine are common in different cases. The uniqueness is then due to the new estimators, i.e. machine learning models, that you include into your search space when it is designed and was assumed to be magically provided there. 
     
-    We now turn to the implementation details of defining new estimators. 
+    We now turn to the implementation details of defining new estimators to explain the reason of such uniqueness. 
 
 2. A function which loads and returns the HyperEstimator for the desired model, for example
     ```python
