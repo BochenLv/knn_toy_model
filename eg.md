@@ -20,6 +20,13 @@ def cnn_search_space(input_shape, output_units, block_num_choices=[2, 3], kernel
 eg2
 ```python
 searcher = MCTSSearcher(search_space, max_node_space=10)
+```
+
+```python
 model = HyperGBM(searcher, task='multiclass', reward_metric='accuracy')
 model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
+```
+
+```python
+best_model = model.load_estimator(model.get_best_trial().model_file)
 ```
