@@ -1,5 +1,5 @@
 ```python
-def cnn_search_space(input_shape, output_units, block_num_choices=[2, 3, 4],     filters_choices=[32, 64], kernel_size_choices=[(1, 1), (3, 3)]):
+def cnn_search_space(input_shape, output_units, block_num_choices=[2, 3], filters_choices=[32, 64], kernel_size_choices=[(1, 1), (3, 3)]):
         input = Input(shape=input_shape)
         blocks = Repeat(
             lambda step: conv_block(
