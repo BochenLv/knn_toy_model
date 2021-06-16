@@ -16,6 +16,9 @@ def cnn_search_space(input_shape, output_units, block_num_choices=[2, 3], kernel
         x = Dense(output_units, activation=output_activation, name='predictions')(x)
     return space
 ```
+```python
+search_space = search_space_general
+```
 
 eg2
 ```python
