@@ -16,3 +16,10 @@ def cnn_search_space(input_shape, output_units, block_num_choices=[2, 3], kernel
         x = Dense(output_units, activation=output_activation, name='predictions')(x)
     return space
 ```
+
+eg2
+```python
+searcher = MCTSSearcher(search_space, max_node_space=10)
+model = HyperGBM(searcher, task='multiclass', reward_metric='accuracy')
+model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
+```
