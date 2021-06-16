@@ -27,6 +27,9 @@ searcher = MCTSSearcher(search_space, max_node_space=10)
 
 ```python
 model = HyperGBM(searcher, task='multiclass', reward_metric='accuracy')
+```
+
+```python
 model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
 
