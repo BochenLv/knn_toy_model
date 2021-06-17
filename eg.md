@@ -1,6 +1,7 @@
 ```python
 def cnn_search_space(input_shape, output_units, block_num_choices=[2, 3], kernel_size_choices=[(1, 1), (3, 3)]):
         input = Input(shape=input_shape)
+        fc_units = Choice([1024, 2048, 4096])
         blocks = Repeat(
             lambda step: conv_block(
                 block_no=step,
@@ -12,8 +13,8 @@ def cnn_search_space(input_shape, output_units, block_num_choices=[2, 3], kernel
                 hp_bn_act=Choice([seq for seq in itertools.permutations(range(2))])),
             repeat_times=block_num_choices)(input)
         x = Flatten()(blocks)
-        x = Dense(units=hp_fc_units, activation=hp_activation, name='fc1')(x)
-        x = Dense(output_units, activation=output_activation, name='predictions')(x)
+        x = Dense(units=fc_units, activation='relu', name='fc1')(x)
+        x = Dense(output_units, activation='softmax', name='predictions')(x)
     return space
 ```
 ```python
