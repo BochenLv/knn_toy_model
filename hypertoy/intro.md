@@ -8,9 +8,10 @@
 
 Based on the above brief introduction, using the ```Hypernets``` to implement an AutoML task can now be decomposed as three parts: designing the **search space**, an instance of the ```Hyperspace```, constructing the **Hypermodel** which will be sampled from the search space using a searcher provided by ```Hypernets``` during the search process, and building the **Estimator** which recieves a sampled Hypermodel, evaluates it and then returns the corresponding rewards such that the searcher can update the Hypermodel to be sampled based on the rewards. 
 
-We provide a [toy example](#sec_eg), designing an AutoML task with KNN, for the purpose of helping the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML task. 
+We will provide a toy example, designing an AutoML task with KNN, for the purpose of helping the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML task. 
 
-To reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very begining--how to perform parameter tuning of KNN automatically using ```Hyernets```--but with a different manner: we view the parameter tuning problem as a complete AutoML task and constrcut an AutoML tool for this task from scratch using ```Hypernets```. As introduced above, this constructing procedure contains 3 steps and we will follow these steps. 
+However, to reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very begining--how to perform parameter tuning of KNN automatically using ```Hyernets```--but with a different manner: we view the parameter tuning problem as a complete AutoML task and constrcut a complete AutoML tool for this task from scratch using ```Hypernets```. For simplicity, we only consider the classification task, and the case for regression can be easily generalized. As introduced above, this constructing procedure contains 3 steps and we will follow these steps. 
+
 - ***Designing the search space.*** In the case of parameter tuning, our HyperSpace, the search space of the AutoML task, is very simple in the sense that there is only one module space which contains only one machine learning model--our KNN model--along with its parameter space. To incorporate these spaces, we first define the parameter space for tunable parameters with different values, and then build the whole HyperSpace to include this parameter space so that the search algorithm can search suitable parameters among avaliable ones.  
     ```python
     class Param_space(object):
@@ -62,15 +63,17 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
         def load_estimator(self, model_file):
             return KnnEstimator.load(model_file)
     ```
-- ***Building the Estimator.*** Building the Estimator often takes the most efforts for implementing a new AutoML task using ```Hypernets```. The ```Estimators``` required by ```Hypernets``` is in fact a more general notion than the frequently used one--the machine learning models. Fortunately, for our case of parameter tuning of KNN, the ```Estimator``` is easy to be implemented since the sampled search space only contains one machine learning model which is the only thing that needs to be evaluated by the ```Estimator```. However, what the ```Estimator``` can do is actually much more than this and we will discuss more in the next section. 
+- ***Building the Estimator.*** Building the Estimator often takes the most efforts for implementing a new AutoML task using ```Hypernets```. The ```Estimators``` required by ```Hypernets``` is in fact a more general notion than the frequently used one--the machine learning models. Fortunately, for our case of parameter tuning of KNN, the ```Estimator``` is easy to be implemented since the sampled search space only contains one machine learning model which is the only thing that needs to be evaluated by the ```Estimator```. Moreover, we also emphasize that the actual abilities of the ```Estimator``` are not restircted to that defined in this section and we refer the readers to the [next section](#sec_eg) for further details. 
     ```python
     class KnnEstimator(Estimator):
         def __init__(self, space_sample, task='binary'):
+            #Users can also set the task as None since Hypernets can automatically
+            #infer the task type.
             super(KnnEstimator, self).__init__(space_sample, task)
 
-            out = space_sample.get_outputs()[0]
+            out = space_sample.get_outputs()[0]#this returns the KNN model
             kwargs = out.param_values
-            kwargs = {key: value for key, value in kwargs.items() if not isinstance(value, HyperNode)}
+            kwargs = {key: value for key, value in kwargs.items() if not isinstance(value, HyperNode)} #copy the parameters which will be sent to the KNN model
 
             cls = kwargs.pop('cls')
             self.model = cls(**kwargs)
@@ -78,11 +81,13 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
             self.model_args = kwargs
         
         def fit(self, X, y, **kwargs):
+            #fit the training data and return the trained model
             self.model.fit(X, y, **kwargs)
 
             return self
         
         def predict(self, X, **kwargs):
+            #return the label of the given example
             pred = self.model.predict(X, **kwargs)
 
             return pred
