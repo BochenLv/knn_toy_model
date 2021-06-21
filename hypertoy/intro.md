@@ -41,9 +41,9 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
 
             with space.as_default():
                 hyper_input = HyperInput(name='input1')
-                model = self.knn
-                modules = [ModuleSpace(name=f'{model["cls"].__name__}', **model)]
-                outputs = ModuleChoice(modules)(hyper_input)
+                model = self.knn #prepare the KNN model to be inclued into the module space 
+                modules = [ModuleSpace(name=f'{model["cls"].__name__}', **model)] #make a module space of the HyperSpace using ModuleSpace()
+                outputs = ModuleChoice(modules)(hyper_input) #pick a model from the module space if there are mutiple models. Here we only have a KNN model.
                 space.set_inputs(hyper_input)
 
             return space
