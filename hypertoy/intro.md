@@ -93,6 +93,8 @@ However, to reveal the core features and ideas of ```Hypernets```, we first cont
             return pred
 
         def evaluate(self, X, y, **kwargs):
+            #evaluate the KNN model on the given dataset (X, y). Here we choose the 
+            # mean accuracy of the KNN model on (X, y) as the evaluation score.
             scores = self.model.score(X, y)
 
             return scores
@@ -107,6 +109,9 @@ However, to reveal the core features and ideas of ```Hypernets```, we first cont
                 return pickle.load(f)
 
         def get_iteration_scores():
+            #This function is designed to return the iteration score for each
+            #iteration. It is not madantory for us to implement this method 
+            #at first.
             return []
     ```
 ## Searcher<span id=sec_searcher>
