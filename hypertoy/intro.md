@@ -20,7 +20,7 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
 
         @property
         """
-        This function returns a dictionary containing tunable parameters, where the avaliable values for each parameter are those provided by the arguments of Choice(), a class which in fact inherits from the ParameterSpace, one of the three basic kinds of the HyperSpace. In other words, all values of the returned dictionary are parts of the parameter space if it is a Choice(). 
+        The following function returns a dictionary containing tunable parameters, where the avaliable values for each parameter are those provided by the arguments of Choice(), a class which in fact inherits from the ParameterSpace, one of the three basic kinds of the HyperSpace. In other words, all values of the returned dictionary are parts of the parameter space if it is a Choice(). 
         """
         def knn(self):
             return dict(
@@ -42,15 +42,16 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
                 hyper_input = HyperInput(name='input1')
                 model = self.knn #prepare the KNN model to be inclued into the module space 
                 modules = [ModuleSpace(name=f'{model["cls"].__name__}', **model)] #make a module space of the HyperSpace using ModuleSpace()
-                outputs = ModuleChoice(modules)(hyper_input) #pick a model from the module space if there are mutiple ones. Here we only have a KNN model.
+                outputs = ModuleChoice(modules)(hyper_input) #pick a model from the module space if there are mutiple ones as the output of the search space. Here we only have a KNN model.
                 space.set_inputs(hyper_input)
 
             return space
     ```
-- ***Constructing the Hypermodel.*** 
+- ***Constructing the Hypermodel.*** The HyperMdel does not reuqire many modifications for our specific task since many core functionalities of the HyperMdel have already been well defined in ```Hypernets``` and are common accross different machine learning models and tasks. We only pay attention to two functions, the ```_get_estimator```, which returns the corresponding KNN model of the sampled search space, and the ```load_estimator```, which loads the configurations of the saved model. The most important method for a HyperModel is the "search" method. By calling the ```search``` method, the search algorithm first searches in the search space and returns a sample of the search space to be utilized for the HyperModel. This HyperModel is then evaluated based on the chosen reward metric and updated towards the optimizing direction.    
     ```python
     class KnnModel(HyperModel):
         def __init__(self, searcher, reward_metric=None, task=None):
+            
             super(KnnModel, self).__init__(searcher, reward_metric=reward_metric, task=task)
         
         def _get_estimator(self, space_sample):
