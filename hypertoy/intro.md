@@ -48,8 +48,60 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
             return space
     ```
 - ***Constructing the Hypermodel.*** 
+    ```python
+    class KnnModel(HyperModel):
+        def __init__(self, searcher, reward_metric=None, task=None):
+            super(KnnModel, self).__init__(searcher, reward_metric=reward_metric, task=task)
+        
+        def _get_estimator(self, space_sample):
+            return KnnEstimator(space_sample, task=self.task)
+        
+        def load_estimator(self, model_file):
+            return KnnEstimator.load(model_file)
+    ```
+- ***Building the Estimator.***
+    ```python
+    class KnnEstimator(Estimator):
+        def __init__(self, space_sample, task='binary'):
+            super(KnnEstimator, self).__init__(space_sample, task)
 
-- Building the Estimator.
+            out = space_sample.get_outputs()[0]
+            kwargs = out.param_values
+            #why need this?
+            kwargs = {key: value for key, value in kwargs.items() if not isinstance(value, HyperNode)}
+
+            cls = kwargs.pop('cls')
+            self.model = cls(**kwargs)
+            self.cls = cls
+            self.model_args = kwargs
+        
+        def fit(self, X, y, **kwargs):
+            self.model.fit(X, y, **kwargs)
+
+            return self
+        
+        def predict(self, X, **kwargs):
+            pred = self.model.predict(X, **kwargs)
+
+            return pred
+
+        def evaluate(self, X, y, **kwargs):
+            scores = self.model.score(X, y)
+
+            return scores
+        
+        def save(self, model_file):
+            with fs.open(model_file, 'wb') as f:
+                pickle.dump(self, f, protocol=4)
+
+        @staticmethod
+        def load(model_file):
+            with fs.open(model_file, 'rb') as f:
+                return pickle.load(f)
+
+        def get_iteration_scores():
+            return []
+    ```
 ## Searcher<span id=sec_searcher>
 
 ## Easy deploying of your AutoML task<span id=sec_eg>
