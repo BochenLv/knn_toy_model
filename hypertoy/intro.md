@@ -11,38 +11,38 @@ Based on the above brief introduction, using the ```Hypernets``` to implement an
 We provide a [toy example](#sec_eg), designing an AutoML task with KNN, for the purpose of helping the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML task. 
 
 To reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very begining--how to perform parameter tuning of KNN automatically using ```Hyernets```--but with a different manner: we view the parameter tuning problem as a complete AutoML task and constrcut an AutoML tool for this task from scratch using ```Hypernets```. As introduced above, this constructing procedure contains 3 steps and we will follow these steps in the following. 
-- Designing the search space. 
+- Designing the search space. In the case of parameter tuning, our HyperSpace, the search space of the AutoML task, is very simple in the sense that there is only one module space which contains only one machine learning model--our KNN model--along with its parameter space.  
     ```python
     class Param_space(object):
-        
-    def __init__(self, **kwargs):
-        super(Param_space, self).__init__()
 
-    @property
-    def knn(self):
-        return dict(
-            cls=neighbors.KNeighborsClassifier,
-            n_neighbors=Choice([2, 3, 5, 6]),
-            weights=Choice(['uniform', 'distance']),
-            algorithm=Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
-            leaf_size=Choice([20, 30, 40]),
-            p=Choice([1, 2]),
-            metric='minkowski',
-            metric_params=None, 
-            n_jobs=None,
-        )
+        def __init__(self, **kwargs):
+            super(Param_space, self).__init__()
 
-    def __call__(self, *args, **kwargs):
-        space = HyperSpace()
+        @property
+        def knn(self):
+            return dict(
+                cls=neighbors.KNeighborsClassifier,
+                n_neighbors=Choice([2, 3, 5, 6]),
+                weights=Choice(['uniform', 'distance']),
+                algorithm=Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
+                leaf_size=Choice([20, 30, 40]),
+                p=Choice([1, 2]),
+                metric='minkowski',
+                metric_params=None, 
+                n_jobs=None,
+            )
 
-        with space.as_default():
-            hyper_input = HyperInput(name='input1')
-            model = self.knn
-            modules = [ModuleSpace(name=f'{model["cls"].__name__}', **model)]
-            outputs = ModuleChoice(modules)(hyper_input)
-            space.set_inputs(hyper_input)
+        def __call__(self, *args, **kwargs):
+            space = HyperSpace()
 
-        return space
+            with space.as_default():
+                hyper_input = HyperInput(name='input1')
+                model = self.knn
+                modules = [ModuleSpace(name=f'{model["cls"].__name__}', **model)]
+                outputs = ModuleChoice(modules)(hyper_input)
+                space.set_inputs(hyper_input)
+
+            return space
 
     ```
 
