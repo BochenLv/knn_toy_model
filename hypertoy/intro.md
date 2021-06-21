@@ -62,7 +62,7 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
         def load_estimator(self, model_file):
             return KnnEstimator.load(model_file)
     ```
-- ***Building the Estimator.*** Building the Estimator often takes the most efforts for implementing a new AutoML task using ```Hypernets```. These ```Estimators``` required by ```Hypernets``` is in fact a more general notion than the frequently used one--the machine learning models. Fortunately, for our case of parameter tuning of KNN, the ```Estimator``` is easy to be implemented since the sampled search space only contains one machine learning model which is the only thing that needs to be evaluated by the ```Estimator```.  
+- ***Building the Estimator.*** Building the Estimator often takes the most efforts for implementing a new AutoML task using ```Hypernets```. The ```Estimators``` required by ```Hypernets``` is in fact a more general notion than the frequently used one--the machine learning models. Fortunately, for our case of parameter tuning of KNN, the ```Estimator``` is easy to be implemented since the sampled search space only contains one machine learning model which is the only thing that needs to be evaluated by the ```Estimator```. However, what the ```Estimator``` can do is actually more than this and we will discuss more features in the next section. 
     ```python
     class KnnEstimator(Estimator):
         def __init__(self, space_sample, task='binary'):
