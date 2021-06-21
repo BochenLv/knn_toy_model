@@ -10,7 +10,7 @@ Based on the above brief introduction, using the ```Hypernets``` to implement an
 
 We provide a [toy example](#sec_eg), designing an AutoML task with KNN, for the purpose of helping the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML task. 
 
-To reveal the core features and ideas of ```Hypernets```, we continue to solve the problem defined in the very begining--how to perform parameter tuning of KNN automatically with ```Hyernets```--but with a different manner: we view the parameter tuning problem as a complete AutoML task and constrcut an AutoML tool for this task from scratch using ```Hypernets```. As introduced above, this constructing procedure contains 3 steps and we will follow these steps in the following. 
+To reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very begining--how to perform parameter tuning of KNN automatically using ```Hyernets```--but with a different manner: we view the parameter tuning problem as a complete AutoML task and constrcut an AutoML tool for this task from scratch using ```Hypernets```. As introduced above, this constructing procedure contains 3 steps and we will follow these steps in the following. 
 - Designing the search space.
 
 - Constructing the Hypermodel.
