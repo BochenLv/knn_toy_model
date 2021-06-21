@@ -1,3 +1,5 @@
+Intorduce how to perform parameter tuninig with the function param_tuning.
+
 ```Hypernets``` is an Automated Machine learning(AutoML) framework which allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework. 
 
 ```Hypernets``` can save such efforts to a large extent while offer more possibilities. 
@@ -67,13 +69,13 @@ However, to reveal the core features and ideas of ```Hypernets```, we first cont
     ```python
     class KnnEstimator(Estimator):
         def __init__(self, space_sample, task='binary'):
-            #Users can also set the task as None since Hypernets can automatically
-            #infer the task type.
+            # Users can also set the task as None since Hypernets can automatically
+            # infer the task type.
             super(KnnEstimator, self).__init__(space_sample, task)
 
-            out = space_sample.get_outputs()[0]#this returns the KNN model
+            out = space_sample.get_outputs()[0]# Returns the KNN model
             kwargs = out.param_values
-            kwargs = {key: value for key, value in kwargs.items() if not isinstance(value, HyperNode)} #copy the parameters which will be sent to the KNN model
+            kwargs = {key: value for key, value in kwargs.items() if not isinstance(value, HyperNode)} # Copy the parameters which will be sent to the KNN model
 
             cls = kwargs.pop('cls')
             self.model = cls(**kwargs)
@@ -81,19 +83,19 @@ However, to reveal the core features and ideas of ```Hypernets```, we first cont
             self.model_args = kwargs
         
         def fit(self, X, y, **kwargs):
-            #fit the training data and return the trained model
+            # Fit the training data and return the trained model
             self.model.fit(X, y, **kwargs)
 
             return self
         
         def predict(self, X, **kwargs):
-            #return the label of the given example
+            # Return the label of the given example
             pred = self.model.predict(X, **kwargs)
 
             return pred
 
         def evaluate(self, X, y, **kwargs):
-            #evaluate the KNN model on the given dataset (X, y). Here we choose the 
+            # Evaluate the KNN model on the given dataset (X, y). Here we choose the 
             # mean accuracy of the KNN model on (X, y) as the evaluation score.
             scores = self.model.score(X, y)
 
@@ -109,11 +111,29 @@ However, to reveal the core features and ideas of ```Hypernets```, we first cont
                 return pickle.load(f)
 
         def get_iteration_scores():
-            #This function is designed to return the iteration score for each
-            #iteration. It is not madantory for us to implement this method 
-            #at first.
+            # This function is designed to return the iteration score for each iteration. 
+            # It is not mandatory for us to implement this method at first.
             return []
     ```
+
+With the above AutoML tool, we are now ready to perform a complete automatic parameter tuning for KNN. In general, we only need four lines of codes to complete such implementation after we finish the designing of the required AutoML tools--not only for the specific example presented here but a more general routine. This routine is summarized as follows:
+1. Define the search space.
+    ```python
+    search_space = Param_space()
+    ```
+2. Choose a searcher from those search algorithms provided by ```Hypernets```. One required  argument for the searcher is the search sapce in which the searcher will performing search.
+    ```python
+    searcher = GridSearcher(search_space, optimize_direction=optimize_direction)
+    ```
+3. Construct the HyperMdel which receives the searcher as its required arguments. In our example, the HyperModel is the ```KnnModel```. 
+    ```python
+    model = KnnModel(searcher=searcher, task='multiclass', reward_metric='accuracy')
+    ```
+4. The ```search``` method of our HyperModel is called to automatically perform the search process and record the current best model parameters. 
+    ```python
+    model.search(X_train, y_train, X_eval, y_eval, **kwargs)
+    ```
+
 ## Searcher<span id=sec_searcher>
 
 ## Easy deploying of your AutoML task<span id=sec_eg>
