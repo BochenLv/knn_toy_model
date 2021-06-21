@@ -19,10 +19,7 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
             super(Param_space, self).__init__()
 
         @property
-        """
-        This function returns a dictionary containing tunable parameters, where the avaliable
-        values for each parameter are those provided by the arguments of Choice(), a class which in fact inherits from the ParameterSpace, one of the three basic kinds of the HyperSpace. In other words, all values of the returned dictionary are parts of the parameter space if it is a Choice().
-        """
+        """This function returns a dictionary containing tunable parameters, where the avaliable values for each parameter are those provided by the arguments of Choice(), a class which in fact inherits from the ParameterSpace, one of the three basic kinds of the HyperSpace. In other words, all values of the returned dictionary are parts of the parameter space if it is a Choice(). """
         def knn(self):
             return dict(
                 cls=neighbors.KNeighborsClassifier,
