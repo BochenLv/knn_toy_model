@@ -11,7 +11,7 @@ Based on the above brief introduction, using the ```Hypernets``` to implement an
 We provide a [toy example](#sec_eg), designing an AutoML task with KNN, for the purpose of helping the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML task. 
 
 To reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very begining--how to perform parameter tuning of KNN automatically using ```Hyernets```--but with a different manner: we view the parameter tuning problem as a complete AutoML task and constrcut an AutoML tool for this task from scratch using ```Hypernets```. As introduced above, this constructing procedure contains 3 steps and we will follow these steps in the following. 
-- Designing the search space. In the case of parameter tuning, our HyperSpace, the search space of the AutoML task, is very simple in the sense that there is only one module space which contains only one machine learning model--our KNN model--along with its parameter space.  
+- ***Designing the search space.*** In the case of parameter tuning, our HyperSpace, the search space of the AutoML task, is very simple in the sense that there is only one module space which contains only one machine learning model--our KNN model--along with its parameter space.  
     ```python
     class Param_space(object):
 
@@ -43,10 +43,8 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
                 space.set_inputs(hyper_input)
 
             return space
-
     ```
-
-- Constructing the Hypermodel.
+- ***Constructing the Hypermodel.***  
 
 - Building the Estimator.
 ## Searcher<span id=sec_searcher>
