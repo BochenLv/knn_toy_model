@@ -6,10 +6,11 @@
 - Third, ```Hypernets``` provides many search algorithms including the simple methods, such as Random Search and Grid Search, and the advanced ones such as Monte-Carlo Tree Search. Users can not only simply choose one from these efficient search methods but also design new search algorithms in a similar way. 
 - Finally, ```Hypernets``` also supports many advacend techniques to futher improve performances of the trained machine learning models. For example, users can apply early stopping to accelerate the training process and prevent overfitting; data cleaning can be applied to improve data quality; data drift detection can be enabled to improve generalization ability of the model, etc. 
 
-Based on the above brief introduction, using the ```Hypernets``` to implement your AutoML task can now be decomposed as three parts: designing the **search space**, an instance of the ```Hyperspace```, constructing the **Hypermodel** which will be sampled from the search space using a searcher provided by ```Hypernets``` during the search process, and building the **Estimator** which recieves a Hypermodel, evaluates it and then returns the corresponding rewards such that the searcher can update the Hypermodel to be sampled based on the rewards. 
+Based on the above brief introduction, using the ```Hypernets``` to implement an AutoML task can now be decomposed as three parts: designing the **search space**, an instance of the ```Hyperspace```, constructing the **Hypermodel** which will be sampled from the search space using a searcher provided by ```Hypernets``` during the search process, and building the **Estimator** which recieves a Hypermodel, evaluates it and then returns the corresponding rewards such that the searcher can update the Hypermodel to be sampled based on the rewards. 
 
-We provide a [toy example](#sec_eg), designing an AutoML task with k-Nearest Neighbour, for the purpose of helping the readers walk through the full pipeline of implementing the ```Hypernets``` to your AutoML tasks. Specifically, 
+We provide a [toy example](#sec_eg), designing an AutoML task with k-Nearest Neighbour, for the purpose of helping the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML tasks.
 
+To reveal the core features and ideas of ```Hypernets```, we continue to solve the problem defined in the very begining--how to perform parameter tuning of KNN automatically with ```Hyernets```--but with a different manner: we 
 ## Searcher<span id=sec_searcher>
 
 ## Easy deploying of your AutoML task<span id=sec_eg>
