@@ -116,7 +116,7 @@ However, to reveal the core features and ideas of ```Hypernets```, we first cont
             return []
     ```
 
-With the above AutoML tool, we are now ready to perform a complete automatic parameter tuning for KNN. In general, we only need four lines of codes to complete such implementation after we finish the designing of the required AutoML tools--not for the specific example presented here but a more general routine. This routine is summarized as follows:
+With the above AutoML tool, we are now ready to perform a complete automatic parameter tuning for KNN. In general, we only need four lines of codes to complete such implementation after we finish designing of the required AutoML tools--not for the specific example presented here but a more general routine. This routine is summarized as follows:
 1. Define the search space.
     ```python
     search_space = Param_space()
