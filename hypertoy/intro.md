@@ -1,6 +1,29 @@
-Parameter tuning is an inevitable step for successfully implementing a machine learning model. Even for a simple model as K-nearest neighbors for classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example, needless to say models which have much more tunable parameters and have to be trained to pick suitable ones. 
+Parameter tuning is an inevitable step for successfully implementing a machine learning model. Even for a simple model as K-nearest neighbors for classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example, needless to say models which have much more tunable parameters and have to be trained for picking suitable ones. Tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts like designing novel models while only perform procedures like parameter tuning in a simple and happy way? The answer is positive. 
 
-```Hypernets``` is an Automated Machine learning(AutoML) framework which allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework. 
+```Hypernets```, an unified Automated Machine learning(AutoML) framework, offers us a very simple way. For the parameter tuning problem of KNN model, using a ```param_tuning``` function from the ```Hypernets```, the only required work we need to do is to define a function serving as the measure of the quality of a set of given parameters. 
+```python
+from sklearn import neighbors
+
+def score_function(X_train, y_train, X_evl, y_evl, 
+                   n_neighbors=Choice([3, 5, 6, 10, 20]),
+                   weights=Choice(['uniform', 'distance']),
+                   algorithm=Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
+                   leaf_size=30,
+                   p=Choice([1, 2])):
+    model = neighbors.KNeighborsClassifier(n_neighbors, weights, algorithm, leaf_size, p)
+    model.fit(X_train, y_train)
+    scores = model.score(X_evl, y_evl)
+    return scores
+
+import hypernets.utils.param_tuning as pt
+history = pt.search_params(score_function, 'grid', max_trials=10, optimize_direction='max')
+```
+
+
+
+
+
+```Hypernets``` is an AutoML framework which allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework. 
 
 ```Hypernets``` can save such efforts to a large extent while offer more possibilities. 
 - First, it decouples the basic components of a general AutoML procedure (Fig. \ref) as four distinct parts: the ```HyperSpace```, the ```Searcher```, the ```HyperModel```, and the ```Estimation Strategy``` (Fig. \ref). This idea is motivated by allowing users to manipulate each component of an AutoML model with ```Hypernets``` accordingly for different purposes. 
