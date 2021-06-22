@@ -1,8 +1,8 @@
-Parameter tuning is an inevitable step for successfully implementing a machine learning model. Even for a simple model as K-nearest neighbors for classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example, needless to say models which have much more tunable parameters and have to be trained for picking suitable ones. Tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts like designing novel models while only perform procedures like parameter tuning in a simple and happy way? The answer is positive. 
+Parameter tuning is an inevitable step for successfully implementing a machine learning model. Even for a simple model as K-nearest neighbors(KNN) for classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example, needless to say models which have much more tunable parameters and have to be trained for picking suitable ones. Tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts like designing novel models while only perform procedures like parameter tuning in a simple and happy way? The answer is positive. 
 
 ```Hypernets```, an unified Automated Machine learning(AutoML) framework, offers us a very simple way. For the parameter tuning problem of KNN model, using a ```param_tuning``` function from the ```Hypernets```, the only required work we need to do is to define a function serving as the measure of the quality of a set of given parameters. 
 ```python
-from sklearn import neighbors
+from sklearn import neighbor
 
 def score_function(X_train, y_train, X_evl, y_evl, 
                    n_neighbors=Choice([3, 5, 6, 10, 20]),
@@ -14,7 +14,9 @@ def score_function(X_train, y_train, X_evl, y_evl,
     model.fit(X_train, y_train)
     scores = model.score(X_evl, y_evl)
     return scores
-
+```
+Now we use the ```param_tuning``` function with the gird search algorithm to perform parameter tuning of our KNN model by simply passing ```score_function``` defined above as an argument to it:
+```python
 import hypernets.utils.param_tuning as pt
 history = pt.search_params(score_function, 'grid', max_trials=10, optimize_direction='max')
 ```
@@ -45,7 +47,7 @@ However, to reveal the core features and ideas of ```Hypernets```, we first cont
             super(Param_space, self).__init__()
 
         @property
-        #The following function returns a dictionary containing tunable parameters, where 
+        # The following function returns a dictionary containing tunable parameters, where 
         # the avaliable values for each parameter are those provided by the arguments of 
         # Choice(), a class which in fact inherits from the ParameterSpace, one of the three 
         # basic kinds of the HyperSpace. In other words, all values of the returned 
