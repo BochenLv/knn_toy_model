@@ -10,12 +10,16 @@ def score_function(X_train, y_train, X_evl, y_evl,
                    algorithm=Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
                    leaf_size=30,
                    p=Choice([1, 2])):
+    # The avaliable values for each tunable parameter are those provided by the list
+    # elements of the argument of Choice(). For example, the parameter "n_neighbors",
+    # the number of the nearest neighbors used to predict the label of a given example, 
+    # can be chosen as 3, 5, 6, 10, and 20.
     model = neighbors.KNeighborsClassifier(n_neighbors, weights, algorithm, leaf_size, p)
     model.fit(X_train, y_train)
     scores = model.score(X_evl, y_evl)
     return scores
 ```
-Now we use the ```param_tuning``` function with the gird search algorithm to perform parameter tuning of our KNN model by simply passing ```score_function``` defined above as an argument to it:
+Currently there is no need to know how the function ```param_tuning``` is able to perform parameter tuning by utilizing the above score function--we only manually provide possible values we like to ```Choice()``` for each tunable parameter. Now we use the ```param_tuning``` function with the gird search algorithm, or other search algorithms such as random search or Monte-Carlo Tree search, to find the suitable parameter values for our KNN model by simply passing ```score_function``` defined above as an argument to it:
 ```python
 import hypernets.utils.param_tuning as pt
 history = pt.search_params(score_function, 'grid', max_trials=10, optimize_direction='max')
