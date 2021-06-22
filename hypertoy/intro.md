@@ -12,9 +12,9 @@ Based on the above brief introduction, using the ```Hypernets``` to implement an
 
 We will provide a toy example, designing an AutoML task with KNN, for the purpose of helping the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML task. 
 
-However, to reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very begining--how to perform parameter tuning of KNN automatically using ```Hyernets```--but with a different manner: we view the parameter tuning problem as a complete AutoML task and constrcut a complete AutoML tool for this task from scratch using ```Hypernets```. For simplicity, we only consider the classification task, and the case for regression can be easily generalized. As introduced above, this constructing procedure contains 3 steps and we will follow these steps. 
+However, to reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very begining--how to perform parameter tuning of KNN automatically using ```Hyernets```--but with a different manner: we view the parameter tuning problem as a complete AutoML task and develop a complete AutoML tool for this task from scratch using ```Hypernets```. For simplicity, we only consider the classification task, and the case for regression can be easily generalized to. As introduced above, this developing procedure contains 3 steps and we will simply follow these steps. 
 
-- ***Designing the search space.*** In the case of parameter tuning, our HyperSpace, the search space of the AutoML task, is very simple in the sense that there is only one module space which contains only one machine learning model--our KNN model--along with its parameter space. To incorporate these spaces, we first define the parameter space for tunable parameters with different values, and then build the whole HyperSpace to include this parameter space so that the search algorithm can search suitable parameters among avaliable ones.  
+- ***Designing the search space.*** In the case of parameter tuning, our search space of the AutoML task, a HyperSpace, is very simple in the sense that there is only one module space which contains only one machine learning model--our KNN model--along with its parameter space. To incorporate these spaces, we first define the ParameterSpace for tunable parameters with different values, and then build the whole HyperSpace to include this ParameterSpace so that the search algorithm can search suitable parameters among avaliable ones.  
     ```python
     class Param_space(object):
 
@@ -65,7 +65,7 @@ However, to reveal the core features and ideas of ```Hypernets```, we first cont
         def load_estimator(self, model_file):
             return KnnEstimator.load(model_file)
     ```
-- ***Building the Estimator.*** Building the Estimator often takes the most efforts for implementing a new AutoML task using ```Hypernets```. The ```Estimators``` required by ```Hypernets``` is in fact a more general notion than the frequently used one--the machine learning models. Fortunately, for our case of parameter tuning of KNN, the ```Estimator``` is easy to be implemented since the sampled search space only contains one machine learning model which is the only thing that needs to be evaluated by the ```Estimator```. Moreover, we also emphasize that the actual abilities of the ```Estimator``` are not restircted to that defined in this section and we refer the readers to the [next section](#sec_eg) for further details. 
+- ***Building the Estimator.*** Building the Estimator often takes the most efforts for implementing a new AutoML task using ```Hypernets```. The ```Estimators``` required by ```Hypernets``` is in fact a more general notion than the frequently used one--the machine learning model. Fortunately, for our case of parameter tuning of KNN, the ```Estimator``` is easy to be implemented since the sampled search space only contains one machine learning model which is the only thing that needs to be evaluated by the ```Estimator```. Moreover, we emphasize that the actual abilities of the ```Estimator``` are not restircted to that defined in this section and we refer the readers to the [next section](#sec_eg) for further details. 
     ```python
     class KnnEstimator(Estimator):
         def __init__(self, space_sample, task='binary'):
@@ -121,7 +121,7 @@ With the above AutoML tool, we are now ready to perform a complete automatic par
     ```python
     search_space = Param_space()
     ```
-2. Choose a searcher from those search algorithms provided by ```Hypernets```. One required  argument for the searcher is the search sapce in which the searcher will perform search.
+2. Choose a searcher from those search algorithms provided by ```Hypernets```. One required  argument for the searcher is the search sapce in which the searcher will perform searching.
     ```python
     searcher = GridSearcher(search_space, optimize_direction=optimize_direction)
     ```
@@ -129,9 +129,13 @@ With the above AutoML tool, we are now ready to perform a complete automatic par
     ```python
     model = KnnModel(searcher=searcher, task='multiclass', reward_metric='accuracy')
     ```
-4. The ```search``` method of our HyperModel is called to automatically perform the search process and record the current best model parameters. 
+4. The ```search``` method of our HyperModel is called to automatically perform the search process on the dataset (X_train, y_train) and record the current best model parameters. 
     ```python
     model.search(X_train, y_train, X_eval, y_eval, **kwargs)
+    ```
+5. One can get the best model in the following way:
+    ```python
+    best_model = model.get_best_trial()
     ```
 
 ## Searcher<span id=sec_searcher>
