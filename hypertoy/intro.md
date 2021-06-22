@@ -33,11 +33,12 @@ best_param = history.get_best().sample
 
 This is not the whole story. 
 
-Parameter tuning is only a fraction of the AutoML and ```Hypernets``` is capble of doing far more things than just performing parameter tuning. In the following sections, we will briefly introduce ```Hypernets``` as an AutoML framework and wish to clarify: 
+Parameter tuning is only a fraction of the full-pipelin AutoML process and ```Hypernets``` is capble of doing far more things than just performing parameter tuning. In the following sections, we will briefly introduce ```Hypernets``` as an AutoML framework and wish to clarify: 
 - the basic building blocks of ```Hypernets```;
 - basic procedures to develop an AutoML tool for parameter tuning problem and the more general full-pipeline machine learning modeling;
 - the 
 
+=======
 ```Hypernets``` is an AutoML framework which allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework. 
 
 ```Hypernets``` can save such efforts to a large extent while offer more possibilities. 
@@ -177,7 +178,7 @@ With the above AutoML tool, we are now ready to perform a complete automatic par
     ```
 Now we can celebrate for the fine tuned KNN model! The convenience of following this procedure lies in that one needs not develop anything else to perform parameter tuning of KNN model for other classification task dataset without categorical features. Instead, simply passing these dataset to the ```search``` method of the ```KnnModel``` will return us the model with suitable parameters.
 
-However, readers will also immediately notice that, before sending the dataset to the mdoel, one has to manually handle the categorical features of some dataset if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want our AutoML tool to be able to perform more things like data cleaning. It is therefore a great idea to extend our AutoML tool for KNN model to automate the full pipeline of machine learning task once for all. This is exactly the topic of the [next section](#sec_eg).
+However, readers will also immediately notice that, before sending the dataset to the mdoel, one has to manually handle the categorical features of some dataset if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want our AutoML tool to be able to perform more things like data cleaning. It is therefore a great idea to extend our AutoML tool for KNN model to automate the full pipeline of machine learning task once for all. These are exactly the topics of the [next section](#sec_eg).
 
 ## Easy deploying of your AutoML task<span id=sec_eg>
 To apply your end-to-end AutoML models built with the ```Hypernets```, the readers usually first design a search space, which mainly includes transformations of the data, feature engineerings, and the desired estimators, the most important part and the primary work you will do for designing your AutoML model with the ```Hypernets```. With this search space in hand, the readers then choose a searcher from those defined in the ```Hypernets```, such as ```RandomSearcher```, whose functionality is to repeatedly 'search' samples from the search space. This searcher is then passed as an argument to your model, an object inherited from the ```Hypermodel```. Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
