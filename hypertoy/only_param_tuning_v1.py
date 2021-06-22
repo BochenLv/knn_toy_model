@@ -116,10 +116,3 @@ params = {'n_neighbors': Choice([2, 3, 5, 6]),
             'leaf_size': Choice([20, 30, 40]),
             'p': Choice([1, 2]),
         }
-
-def score_function(X_train, y_train, X_evl, y_evl, **params):
-    model = neighbors.KNeighborsClassifier(**params)
-    model.fit(X_train, y_train)
-    scores = model.evaluate(X_evl, y_evl)
-    
-    return scores
