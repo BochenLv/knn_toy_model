@@ -31,7 +31,12 @@ The best model parameters can be obtained by calling the following method of ```
 best_param = history.get_best().sample
 ```
 
-This is not the whole story. Parameter tuning is only a fraction of the AutoML and ```Hypernets``` is capble of doing far more things than just performing parameter tuning. In the following sections, we will briefly introduce the basic concepts of the ```Hypernets``` and 
+This is not the whole story. 
+
+Parameter tuning is only a fraction of the AutoML and ```Hypernets``` is capble of doing far more things than just performing parameter tuning. In the following sections, we will briefly introduce ```Hypernets``` as an AutoML framework and wish to clarify: 
+- the basic building blocks of ```Hypernets```;
+- basic procedures to develop an AutoML tool for parameter tuning problem and the more general full-pipeline machine learning modeling;
+- the 
 
 ```Hypernets``` is an AutoML framework which allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework. 
 
