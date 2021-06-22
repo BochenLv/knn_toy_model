@@ -1,3 +1,5 @@
+# A Brief Tutorial of Implementing AutoML Tools with Hypernets
+
 Parameter tuning is an inevitable step for successfully implementing a machine learning model. Even for a simple model as K-nearest neighbors(KNN) for classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example, needless to say models which have much more tunable parameters and have to be trained for picking suitable ones. Tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts of machine learning like designing novel models while only perform procedures like parameter tuning in a simple and happy way? 
 
 The answer is positive. 
@@ -183,7 +185,7 @@ The convenience of following this procedure lies in that one needs not develop a
 
 However, readers will also immediately notice that, before sending the dataset to the mdoel, one has to manually handle the categorical features of some dataset if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want our AutoML tool to be able to perform more things like data cleaning. It is therefore a great idea to extend our AutoML tool for KNN model to automate the full pipeline of machine learning task once for all. These are exactly the topics of the [next section](#sec_eg).
 
-## Easy deploying of your AutoML task<span id=sec_eg>
+## Building your full-pipeline AutoML model<span id=sec_eg>
 To apply your end-to-end AutoML models built with the ```Hypernets```, the readers usually first design a search space, which mainly includes transformations of the data, feature engineerings, and the desired estimators, the most important part and the primary work you will do for designing your AutoML model with the ```Hypernets```. With this search space in hand, the readers then choose a searcher from those defined in the ```Hypernets```, such as ```RandomSearcher```, whose functionality is to repeatedly 'search' samples from the search space. This searcher is then passed as an argument to your model, an object inherited from the ```Hypermodel```. Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
 ```python
 #Load the data and suppose that the task is multi-classification
