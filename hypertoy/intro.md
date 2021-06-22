@@ -1,4 +1,6 @@
-Parameter tuning is an inevitable step for successfully implementing a machine learning model. Even for a simple model as K-nearest neighbors(KNN) for classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example, needless to say models which have much more tunable parameters and have to be trained for picking suitable ones. Tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts like designing novel models while only perform procedures like parameter tuning in a simple and happy way? The answer is positive. 
+Parameter tuning is an inevitable step for successfully implementing a machine learning model. Even for a simple model as K-nearest neighbors(KNN) for classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example, needless to say models which have much more tunable parameters and have to be trained for picking suitable ones. Tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts of machine learning like designing novel models while only perform procedures like parameter tuning in a simple and happy way? 
+
+The answer is positive. 
 
 ```Hypernets```, an unified Automated Machine learning(AutoML) framework, offers us a very simple way. For the parameter tuning problem of KNN model, using a ```param_tuning``` function from the ```Hypernets```, the only required work we need to do is to define a function serving as the measure of the quality of a set of given parameters. 
 ```python
@@ -13,20 +15,18 @@ def score_function(X_train, y_train, X_evl, y_evl,
     # The avaliable values for each tunable parameter are those provided by the list
     # elements of the argument of Choice(). For example, the parameter "n_neighbors",
     # the number of the nearest neighbors used to predict the label of a given example, 
-    # can be chosen as 3, 5, 6, 10, and 20.
+    # can be chosen as 3, 5, 6, 10, and 20. 
     model = neighbors.KNeighborsClassifier(n_neighbors, weights, algorithm, leaf_size, p)
     model.fit(X_train, y_train)
     scores = model.score(X_evl, y_evl)
     return scores
 ```
-Currently there is no need to know how the function ```param_tuning``` is able to perform parameter tuning by utilizing the above score function--we only manually provide possible values we like to ```Choice()``` for each tunable parameter. Now we use the ```param_tuning``` function with the gird search algorithm, or other search algorithms such as random search or Monte-Carlo Tree search, to find the suitable parameter values for our KNN model by simply passing ```score_function``` defined above as an argument to it:
+Currently there is no need to know how the function ```param_tuning``` is able to perform parameter tuning by utilizing the above score function--we only manually provide possible values we like to ```Choice()``` for each tunable parameter. Now let's use the ```param_tuning``` function with the gird search algorithm, or other search algorithms such as random search or Monte-Carlo Tree search, to find the suitable parameter values for our KNN model by simply passing the ```score_function``` defined above as an argument to it:
 ```python
 import hypernets.utils.param_tuning as pt
 history = pt.search_params(score_function, 'grid', max_trials=10, optimize_direction='max')
 ```
-
-
-
+The best 
 
 
 ```Hypernets``` is an AutoML framework which allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework. 
