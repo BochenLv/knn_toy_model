@@ -137,6 +137,9 @@ With the above AutoML tool, we are now ready to perform a complete automatic par
     ```python
     best_model = model.get_best_trial()
     ```
+Now we can celebrate for the fine tuned KNN model! The convenience of following this procedure lies in that one needs not develop anything else to perform parameter tuning of KNN model for other classification task dataset. Instead, one simply pass these dataset to the ```search``` method of the ```KnnModel```.
+
+However, users will also immediately notice that, before sending the dataset to the mdoel, one has to manually handle the categorical features of some dataset if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want to include 
 
 ## Searcher<span id=sec_searcher>
 
