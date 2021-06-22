@@ -38,7 +38,8 @@ Parameter tuning is only a fraction of the full-pipelin AutoML process and ```Hy
 - basic procedures to develop an AutoML tool for parameter tuning problem and the more general full-pipeline machine learning modeling;
 - the 
 
-=======
+=========================================
+
 ```Hypernets``` is an AutoML framework which allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework. 
 
 ```Hypernets``` can save such efforts to a large extent while offer more possibilities. 
