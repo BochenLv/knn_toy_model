@@ -36,7 +36,7 @@ This is not the whole story.
 Parameter tuning is only a fraction of the full-pipelin AutoML process and ```Hypernets``` is capble of doing far more things than just performing parameter tuning. In the following sections, we will briefly introduce ```Hypernets``` as an AutoML framework and wish to clarify: 
 - the basic building blocks of ```Hypernets```;
 - basic procedures to develop an AutoML tool for parameter tuning problem and the more general full-pipeline machine learning modeling;
-- the 
+- some advanced features of ```Hypernets```.
 
 *******
 
@@ -177,7 +177,9 @@ With the above AutoML tool, we are now ready to perform a complete automatic par
     ```python
     best_model = model.get_best_trial()
     ```
-Now we can celebrate for the fine tuned KNN model! The convenience of following this procedure lies in that one needs not develop anything else to perform parameter tuning of KNN model for other classification task dataset without categorical features. Instead, simply passing these dataset to the ```search``` method of the ```KnnModel``` will return us the model with suitable parameters.
+Now we can celebrate for the fine tuned KNN model! 
+
+The convenience of following this procedure lies in that one needs not develop anything else to perform parameter tuning of KNN model for other classification task dataset without categorical features. Instead, simply passing these dataset to the ```search``` method of the ```KnnModel``` will return us the model with suitable parameters.
 
 However, readers will also immediately notice that, before sending the dataset to the mdoel, one has to manually handle the categorical features of some dataset if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want our AutoML tool to be able to perform more things like data cleaning. It is therefore a great idea to extend our AutoML tool for KNN model to automate the full pipeline of machine learning task once for all. These are exactly the topics of the [next section](#sec_eg).
 
