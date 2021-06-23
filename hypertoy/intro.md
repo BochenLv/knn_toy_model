@@ -190,7 +190,7 @@ However, readers will also immediately notice that, before sending the dataset t
 ## Building your full-pipeline AutoML tool for KNN<span id=sec_eg>
 Typically, the procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpse of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets. 
 
-The most important part and the primary work we will do is to extend our search space based on the introduction of the basic building blocks of ```Hypernets``` in the last section. For clarity, we still follow the 3 steps of developing our AutoML tools for full-pipeline KNN model with ```Hypernets``` as indicated before.
+The most important part and the primary work we will do is to extend our search space based on the introduction of the basic building blocks of ```Hypernets``` in last section. For clarity, we still follow the 3 steps of developing our AutoML tools for full-pipeline KNN model with ```Hypernets``` as indicated before.
 
 
 - ***Designing a search space.*** To enable our AutoML tool to perform things like data    preprocessing, we need to encapsulate these procedures to module spaces to our search space, a ```HyperSpace``` object, and then connect them using the ```ConnectionSpace``` as introduced above. For this reason, these module spaces are now divided into two kinds: one containing the **preprocessor** and the other for **machine learning model**, i.e. KNN model here. We now devote to wrapping these two kinds of module spaces into our search space respectively for full-pipeline AutoML process. 
@@ -199,7 +199,7 @@ The most important part and the primary work we will do is to extend our search 
 
     On the other hand, building the module space for our KNN model needs extra effort. We do this by introducing a class ```_HypreEstimatorCreator``` so that one can easily generalize the method presented here to incude other kinds of machine learning models. Then calling the function ```create_estimators```will return the module space of our KNN model. 
     
-    We can now define a class ```KnnSearchSpaceGenerator``` as we did for defining the ```Param_space``` in the last section to obtain the search space which include the ```create_preprocessor``` and ```create_estimators``` as its methods. Moreover, we emphasize that it is fairly easy to manipulate the initializations of the models or even include other machine learning models provided by scikit-learn such as support vector machines into our search space. 
+    We can now define a class ```KnnSearchSpaceGenerator``` as we did for defining the ```Param_space``` in last section to obtain the search space which include the ```create_preprocessor``` and ```create_estimators``` as its methods. Moreover, we emphasize that it is fairly easy to manipulate the initializations of the models or even include other machine learning models provided by scikit-learn such as support vector machines into our search space. 
     ```python
     class KnnSearchSpaceGenerator(object):
         def __init__(self, **kwargs) -> None:
@@ -275,10 +275,33 @@ The most important part and the primary work we will do is to extend our search 
         def __call__(self, *args, **kwargs):
             return self.estimator_cls(self.estimator_fit_kwargs, **self.estimator_init_kwargs)
     ```
-- ***Constructing the Hypermodel.*** to receive the searcher<span id=sec_model> 
-This section needs additional attention for its importance. Here, we devote to constructing the ```HyperYourModel``` of your task, which is an object inherited from the ```Hypermodel``` of the ```Hypernets```. For our example of k-nearest neighbors, this is simply named as ```toy_KNN```. It is not hard for the readers to build ```HyperYourModel``` with models other than the k-nearest neighbors by following steps discussed in this section. 
+- ***Constructing the Hypermodel.*** Similar to last section, to construct the HyperModel, named as ```KnnModel```, one only needs to define two functions properly: ```_get_estimator``` and ```load_estimator```. Other necessary parts of it have already been well defined.
+    ```python
+    class toy_KNN(HyperModel):
+    """
+    KNN as a toy example. This class includes several methods as explained below.
+    _get_estimator: return a knn estimator
+    load_estimatro: load previously saved model
+    """
 
-Basically, to define a class ```HyperYourModel```, one needs to define two functions properly: 
+    def __init__(self, searcher, dispatcher=None, callbacks=None, reward_metric='accuracy', task=None,
+                 discriminator=None, data_cleaner_params=None):
+        self.data_cleaner_params = data_cleaner_params
+
+        HyperModel.__init__(self, searcher, dispatcher=dispatcher, callbacks=callbacks, reward_metric=reward_metric,
+                            task=task, discriminator=discriminator)
+
+    def _get_estimator(self, space_sample):
+        estimator = toy_KNN_estimator(task=self.task, space_sample=space_sample,
+                                      data_cleaner_params=self.data_cleaner_params)
+        return estimator
+
+    def load_estimator(self, model_file):
+        assert model_file is not None
+        return toy_KNN_estimator.load(model_file)
+    ```
+
+
 1. A function that returns the estimator of the HyperYourModel from the search space returned by the searcher
     ```python 
     def _get_estimator(space_sample):
