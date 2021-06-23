@@ -52,9 +52,9 @@ Parameter tuning is only a fraction of the full-pipeline AutoML process and ```H
 
 Based on the above brief introduction, using the ```Hypernets``` to implement an AutoML task can now be decomposed as three parts: designing the **search space**, an instance of the ```Hyperspace```, constructing the **Hypermodel** which will be sampled from the search space using a searcher provided by ```Hypernets``` during the search process, and building the **Estimator** which receives a sampled Hypermodel, evaluates it and then returns the corresponding rewards such that the searcher can update the Hypermodel to be sampled based on the rewards. 
 
-We will provide a toy example, designing an AutoML task with KNN, to help the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML task. 
+We will provide a toy example, designing an AutoML tool for KNN, to help the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML task. 
 
-However, to reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very beginning--how to perform parameter tuning of KNN automatically using ```Hyernets```--but in a different manner: we view the parameter tuning problem as a complete AutoML task and develop a complete AutoML tool for this task from scratch using ```Hypernets```. For simplicity, we only consider the classification task, and the regression case can be easily generalized. As introduced above, this developing procedure contains 3 steps and we will simply follow these steps. 
+To reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very beginning--how to perform parameter tuning of KNN automatically using ```Hyernets```--but in a different manner: we view the parameter tuning problem as a complete AutoML task and develop a complete AutoML tool for this task from scratch using ```Hypernets```. For simplicity, we only consider the classification task, and the regression case can be easily generalized. As introduced above, this developing procedure contains 3 steps and we will simply follow these steps. 
 
 - ***Designing the search space.*** In the case of parameter tuning, our search space of the AutoML task, a HyperSpace, is very simple in the sense that there is only one module space which contains only one machine learning model--our KNN model--along with its parameter space. To incorporate these spaces, we first define the ParameterSpace for tunable parameters with different values and then build the whole HyperSpace to include this ParameterSpace so that the search algorithm can search suitable parameters among available ones.  
     ```python
@@ -68,7 +68,7 @@ However, to reveal the core features and ideas of ```Hypernets```, we first cont
         # the avaliable values for each parameter are those provided by the arguments of 
         # Choice(), a class which in fact inherits from the ParameterSpace, one of the three 
         # basic kinds of the HyperSpace. In other words, all values of the returned 
-        # dictionary are parts of the parameter space if it is a Choice(). 
+        # dictionary are parts of the parameter space if they are Choice(). 
         def knn(self):
             return dict(
                 cls=neighbors.KNeighborsClassifier,
