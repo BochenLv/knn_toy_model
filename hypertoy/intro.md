@@ -275,7 +275,7 @@ The most important part and the primary work we will do is to extend our search 
         def __call__(self, *args, **kwargs):
             return self.estimator_cls(self.estimator_fit_kwargs, **self.estimator_init_kwargs)
     ```
-- ***Constructing the Hypermodel.*** Similar to last section, to construct the HyperModel, named as ```KnnModel```, one only needs to define two functions properly: ```_get_estimator``` and ```load_estimator```. Other necessary parts of it have already been well defined.
+- ***Constructing the Hypermodel.*** Similar to last section, to construct the HyperModel(named as ```KnnModel```) one only needs to define two functions properly: ```_get_estimator``` and ```load_estimator```. Other necessary parts of it have already been well defined.
     ```python
     class toy_KNN(HyperModel):
     """
@@ -300,10 +300,87 @@ The most important part and the primary work we will do is to extend our search 
         assert model_file is not None
         return toy_KNN_estimator.load(model_file)
     ```
-    One may immediately notice that we nearly did nothing in this step. Is our Hypermodel defined here a unique one? The answer is positive. The uniqueness of ```HyperModel``` built for a specific machine learning model, e.g. the Hypermodel for KNN or support vector machine, is provided by its associated HyperEstimator through receiving the corresponding search space. As we discussed, the HyperEstimator used in ```Hypernets``` is a more general notion than the usual one--the machine learning model--which is a fraction of the HyperEstimator but also the origin of the uniqueness of each HyperEstimator because the steps before introducing machine learning models to the full-pipeline modeling are usually common for different cases. As a result, although a HyperEstimator usually includes many arguments and functions to support advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch when we want to extend our procedures to other machien learning models. 
+- ***Building the Estimator.*** One may immediately notice that we nearly did nothing in last step. Is our Hypermodel defined there a unique one? The answer is positive. The uniqueness of ```HyperModel``` built for a specific machine learning model, e.g. the Hypermodel for KNN or support vector machine, is provided by its associated (Hyper)Estimator through receiving the corresponding search space. As discussed before, the (Hyper)Estimator used in ```Hypernets``` is a more general notion than the usual one--the machine learning model--which is a fraction of the (Hyper)Estimator but also the origin of the uniqueness of each (Hyper)Estimator because the steps before introducing machine learning models to the full-pipeline modeling are usually common for different cases. As a result, although a (Hyper)Estimator usually includes many arguments and functions to support advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch when we want to extend our procedures to other machien learning models. 
     
-    We now turn to the implementation details of building new estimators to explain the reason for such uniqueness. 
-- ***Building the Estimator.***
+    The implementation details are presented in ...Here we only introduce some main methods.
+    ```python
+    class toy_KNN_estimator(Estimator):
+        
+        def __init__(self, task, space_sample, data_cleaner_params=None):
+            # space_sample is sampled from the search space by the searcher.
+    
+            super(toy_KNN_estimator, self).__init__(space_sample=space_sample, task=task)    
+            self.data_pipeline = None
+            self.data_cleaner_params = data_cleaner_params
+            self.data_cleaner = None
+            self.knn_model = None
+            self.fit_kwargs = None
+            self.class_balancing = None
+            self.classes_ = None
+            self._build_model(space_sample)
+
+        def _build_model(self, space_sample):
+            # This function builds a kNN model from the sampled search space
+            ...
+
+        def build_pipeline(self, space, last_transformer):
+            # Build the data transformation pipeline
+            ...
+            return pipeline
+
+        def fit_transform_data(self, X, y):
+            # Fit and transform the data
+            if self.data_cleaner is not None:
+                X, y = self.data_cleaner.fit_transform(X, y)
+            X = self.data_pipeline.fit_transform(X, y)
+            return X
+
+        def transform_data(self, X, y=None):
+            # Transform the data
+            if self.data_cleaner is not None:
+                X = self.data_cleaner.transform(X)
+            X = self.data_pipeline.transform(X)
+            return  X
+
+        def get_iteration_scores(self):
+            ...
+            return iteration_scores
+
+        def fit(self, X, y, **kwargs):
+            X = self.fit_transform_data(X, y)
+                ...
+            self.knn_model.group_id = f'{self.knn_model.__class__.__name__}'
+            self.knn_model.fit(X, y, **kwargs)
+
+        def predict(self, X, **kwargs):
+            X = self.transform_data(X)
+            pred = self.knn_model.predict(X)
+            return pred
+
+        def predict_proba(self, X, **kwargs):
+            X = self.transform_data(X)
+            pred = self.knn_model.predict_proba(X, **kwargs)
+            return pred
+
+        def evaluate(self, X, y, metrics='accuracy', **kwargs):
+            if self.task != 'regression':
+                proba = self.predict_proba(X)
+            else:
+                proba = None
+            preds = self.predict(X)
+            scores = calc_score(y, preds, proba, metrics, self.task)
+            return scores
+        
+        def save(self, model_file):
+            with fs.open(f'{model_file}', 'wb') as output:
+                pickle.dump(self, output, protocol=pickle.HIGHEST_PROTOCOL)
+        
+        @staticmethod
+        def load(model_file):
+            with fs.open(f'{model_file}', 'rb') as input:
+                model = pickle.load(input)
+                return model
+    ```
 
 Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
 ```python
