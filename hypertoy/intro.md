@@ -194,7 +194,7 @@ The most important part and the primary work we will do is to extend our search 
 
 
 - ***Designing a search space.*** To enable our AutoML tool to perform things like data preprocessing, we need to encapsulate these procedures to module spaces to our search space, a ```HyperSpace``` object. These module spaces are now divided into two kinds: one containing the **preprocessor** and the other for **machine learning model**. 
-    Therefore, to successfully design a search space, we need a ```SearchSpaceGenerator``` to wrap these two components as a whole. 
+Therefore, to successfully design a search space, we need a ```SearchSpaceGenerator``` to wrap these two components as a whole. 
 
     **Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. Readers can also modify the ```create_preprocessor``` to manipulate the preprocessings of the data. 
 
