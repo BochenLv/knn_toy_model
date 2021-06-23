@@ -1,10 +1,11 @@
 # A Brief Tutorial for Implementing AutoML Tools with Hypernets
 
-Parameter tuning is an inevitable step for successfully implementing a machine learning model. Even for a simple model as K-nearest neighbors(KNN) for the classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example. Let alone models which have much more tunable parameters and have to be trained multiple times before we can pick suitable values for their parameters. Furthermore, tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts of machine learning like designing novel models while only perform procedures like parameter tuning in a simple and happy way? 
+Parameter tuning is an inevitable step for successfully implementing a machine learning model. Even for a simple model as K-nearest neighbors(KNN) for the classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example. Let alone models which have much more tunable parameters and have to be trained multiple times before we can pick suitable values for their parameters. Furthermore, tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts of machine learning like designing novel models while only perform procedures like parameter tuning in a simple and happy way?
 
-The answer is positive. 
+The answer is positive.
 
 ```Hypernets```, a unified Automated Machine learning(AutoML) framework, offers us a very simple way to solve such problems. Taking the parameter tuning problem of the KNN model as an example, using a ```search_param``` function from the ```Hypernets```, the only required work for us is to define a function serving as the measure of the quality of a set of given parameters.
+
 ```python
 from sklearn import neighbor
 
@@ -23,40 +24,47 @@ def score_function(X_train, y_train, X_evl, y_evl,
     scores = model.score(X_evl, y_evl) #This score is taken as mean accuracy of the model on (X_evl, y_evl)
     return scores
 ```
+
 Currently, there is no need to know how the function ```search_param``` is able to perform parameter tuning by utilizing the above score function--we only manually provide possible values we like to ```Choice()``` for each tunable parameter. Now let's use the ```search_param``` function with the gird search algorithm, or other search algorithms such as random search or Monte-Carlo Tree search, to find the suitable parameter values for our KNN model by simply passing the ```score_function``` defined above as an argument to it:
+
 ```python
 import hypernets.utils.param_tuning as pt
 history = pt.search_params(score_function, 'grid', max_trials=10, optimize_direction='max')
 ```
+
 The best model parameters can be obtained by calling the following method of ```history```
+
 ```python
 best_param = history.get_best().sample
 ```
 
-This is not the whole story. 
+This is not the whole story.
 
-Parameter tuning is only a fraction of the full-pipeline AutoML process and ```Hypernets``` is capable of doing far more things than just tuning parameters. In the following sections, we will briefly introduce ```Hypernets``` as an AutoML framework and wish to clarify: 
+Parameter tuning is only a fraction of the full-pipeline AutoML process and ```Hypernets``` is capable of doing far more things than just tuning parameters. In the following sections, we will briefly introduce ```Hypernets``` as an AutoML framework and wish to clarify:
+
 - the basic building blocks of ```Hypernets```;
 - basic procedures to develop an AutoML tool for parameter tuning problem and the more general full-pipeline machine learning modeling;
 - some advanced features of ```Hypernets```.
 
 *******
 
-```Hypernets``` is an AutoML framework that allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework. 
+```Hypernets``` is an AutoML framework that allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework.
 
-```Hypernets``` can save such efforts to a large extent while offering more possibilities. 
-- First, it decouples the basic components of a general AutoML procedure (Fig. \ref) as four distinct parts: the ```HyperSpace```, the ```Searcher```, the ```HyperModel```, and the ```Estimation Strategy``` (Fig. \ref). This idea is motivated by allowing users to manipulate different components of an AutoML tool built with ```Hypernets``` accordingly for different purposes. 
-- Second, the ```HyperSpace``` is designed to be a powerful search space. The ```HyperSpace``` consists of three different kinds of space: the **module space**, the **parameter space** and the **connection space**, where the module space is designed to contain various machine learning models, data preprocessing or feature engineerings, the parameter space provides the parameters to be searched for machine learning models and the connection space determines the way how different module spaces connect. These connected module spaces and parameter spaces finally give us a highly comprehensive search space which is able to describe the full-pipeline machine learning modeling ranging from data preprocessing to model ensemble. 
-- Third, ```Hypernets``` provides many search algorithms including simple methods, such as Random Search and Grid Search, and advanced ones such as Monte-Carlo Tree Search. Users can not only simply choose one from these efficient search methods but also similarly design new search algorithms. 
-- Finally, ```Hypernets``` also supports many advanced techniques to further improve performances of the trained machine learning models. For example, users can apply early stopping to accelerate the training process and prevent overfitting; data cleaning can be applied to improve data quality; data drift detection can be enabled to improve the generalization ability of the model, etc. 
+```Hypernets``` can save such efforts to a large extent while offering more possibilities.
 
-Based on the above brief introduction, using the ```Hypernets``` to implement an AutoML task can now be decomposed as three parts: designing the **search space**, an instance of the ```Hyperspace```, constructing the **Hypermodel** which will be sampled from the search space using a searcher provided by ```Hypernets``` during the search process, and building the **Estimator** which receives a sampled Hypermodel, evaluates it and then returns the corresponding rewards such that the searcher can update the Hypermodel to be sampled based on the rewards. 
+- First, it decouples the basic components of a general AutoML procedure (Fig. \ref) as four distinct parts: the ```HyperSpace```, the ```Searcher```, the ```HyperModel```, and the ```Estimation Strategy``` (Fig. \ref). This idea is motivated by allowing users to manipulate different components of an AutoML tool built with ```Hypernets``` accordingly for different purposes.
+- Second, the ```HyperSpace``` is designed to be a powerful search space. The ```HyperSpace``` consists of three different kinds of space: the **module space**, the **parameter space** and the **connection space**, where the module space is designed to contain various machine learning models, data preprocessing or feature engineerings, the parameter space provides the parameters to be searched for machine learning models and the connection space determines the way how different module spaces connect. These connected module spaces and parameter spaces finally give us a highly comprehensive search space which is able to describe the full-pipeline machine learning modeling ranging from data preprocessing to model ensemble.
+- Third, ```Hypernets``` provides many search algorithms including simple methods, such as Random Search and Grid Search, and advanced ones such as Monte-Carlo Tree Search. Users can not only simply choose one from these efficient search methods but also similarly design new search algorithms.
+- Finally, ```Hypernets``` also supports many advanced techniques to further improve performances of the trained machine learning models. For example, users can apply early stopping to accelerate the training process and prevent overfitting; data cleaning can be applied to improve data quality; data drift detection can be enabled to improve the generalization ability of the model, etc.
 
-We will provide a toy example, designing an AutoML tool for KNN, to help the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML task. 
+Based on the above brief introduction, using the ```Hypernets``` to implement an AutoML task can now be decomposed as three parts: designing the **search space**, an instance of the ```Hyperspace```, constructing the **Hypermodel** which will be sampled from the search space using a searcher provided by ```Hypernets``` during the search process, and building the **Estimator** which receives a sampled Hypermodel, evaluates it and then returns the corresponding rewards such that the searcher can update the Hypermodel to be sampled based on the rewards.
 
-To reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very beginning--how to perform parameter tuning of KNN automatically using ```Hyernets```--but in a different manner: we view the parameter tuning problem as a complete AutoML task and develop a complete AutoML tool for this task from scratch using ```Hypernets```. For simplicity, we only consider the classification task, and the regression case can be easily generalized. As introduced above, this developing procedure contains 3 steps and we will simply follow these steps. 
+We will provide a toy example, designing an AutoML tool for KNN, to help the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML task.
+
+To reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very beginning--how to perform parameter tuning of KNN automatically using ```Hyernets```--but in a different manner: we view the parameter tuning problem as a complete AutoML task and develop a complete AutoML tool for this task from scratch using ```Hypernets```. For simplicity, we only consider the classification task, and the regression case can be easily generalized. As introduced above, this developing procedure contains 3 steps and we will simply follow these steps.
 
 - ***Designing the search space.*** In the case of parameter tuning, our search space of the AutoML task, a HyperSpace, is very simple in the sense that there is only one module space which contains only one machine learning model--our KNN model--along with its parameter space. To incorporate these spaces, we first define the ParameterSpace for tunable parameters with different values and then build the whole HyperSpace to include this ParameterSpace so that the search algorithm can search suitable parameters among available ones.  
+
     ```python
     class Param_space(object):
 
@@ -96,7 +104,9 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
 
             return space
     ```
-- ***Constructing the Hypermodel.*** The HyperMdel does not require many modifications for our specific task since many core functionalities of the HyperMdel have already been well defined in ```Hypernets``` and are common across different machine learning models and tasks. We only pay attention to two functions, the ```_get_estimator```, which returns the corresponding KNN model of the sampled search space, and the ```load_estimator```, which loads the configurations of the saved model. The most important method for a HyperModel is the "search" method. By calling the ```search``` method, the search algorithm searches in the search space and returns a sample of the search space to be utilized for the HyperModel. This HyperModel is then evaluated based on the chosen reward metric and updated towards the optimizing direction.    
+
+- ***Constructing the Hypermodel.*** The HyperMdel does not require many modifications for our specific task since many core functionalities of the HyperMdel have already been well defined in ```Hypernets``` and are common across different machine learning models and tasks. We only pay attention to two functions, the ```_get_estimator```, which returns the corresponding KNN model of the sampled search space, and the ```load_estimator```, which loads the configurations of the saved model. The most important method for a HyperModel is the "search" method. By calling the ```search``` method, the search algorithm searches in the search space and returns a sample of the search space to be utilized for the HyperModel. This HyperModel is then evaluated based on the chosen reward metric and updated towards the optimizing direction.
+
     ```python
     class KnnModel(HyperModel):
         def __init__(self, searcher, reward_metric=None, task=None):
@@ -109,7 +119,9 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
         def load_estimator(self, model_file):
             return KnnEstimator.load(model_file)
     ```
-- ***Building the Estimator.*** Building the Estimator often takes the most effort for developing a new AutoML tool using ```Hypernets```. The ```Estimators``` required by ```Hypernets``` is in fact a more general notion than the frequently used one in ```sklearn```--the machine learning model. Fortunately, for our case of parameter tuning of KNN, the ```Estimator``` is easy to be implemented since the sampled search space only contains one machine learning model which is the only thing that needs to be evaluated by the ```Estimator```. Moreover, we emphasize that the actual abilities of the ```Estimator``` are not restricted to that defined in this section and we refer the readers to the [next section](#sec_eg) for further details. 
+
+- ***Building the Estimator.*** Building the Estimator often takes the most effort for developing a new AutoML tool using ```Hypernets```. The ```Estimators``` required by ```Hypernets``` is in fact a more general notion than the frequently used one in ```sklearn```--the machine learning model. Fortunately, for our case of parameter tuning of KNN, the ```Estimator``` is easy to be implemented since the sampled search space only contains one machine learning model which is the only thing that needs to be evaluated by the ```Estimator```. Moreover, we emphasize that the actual abilities of the ```Estimator``` are not restricted to that defined in this section and we refer the readers to the [next section](#sec_eg) for further details.
+
     ```python
     class KnnEstimator(Estimator):
         def __init__(self, space_sample, task='binary'):
@@ -161,45 +173,57 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
     ```
 
 With the above AutoML tool, we are now ready to perform a complete automatic parameter tuning for KNN. In general, we only need four lines of codes to complete such implementation after we finish designing the required AutoML tools--not for the specific example presented here but a more general routine. This routine is summarized as follows:
+
 1. Define the search space.
+
     ```python
     search_space = Param_space()
     ```
+
 2. Choose a searcher from those search algorithms provided by ```Hypernets```. One required  argument for the searcher is the search sapce in which the searcher will perform searching.
+
     ```python
     searcher = GridSearcher(search_space, optimize_direction=optimize_direction)
     ```
-3. Construct the HyperMdel which receives the searcher as its required arguments. In our example, the HyperModel is the ```KnnModel```. 
+
+3. Construct the HyperMdel which receives the searcher as its required arguments. In our example, the HyperModel is the ```KnnModel```.
+
     ```python
     model = KnnModel(searcher=searcher, task='multiclass', reward_metric='accuracy')
     ```
-4. The ```search``` method of our HyperModel is called to automatically perform the search process on the dataset (X_train, y_train) and record the current best model parameters. 
+
+4. The ```search``` method of our HyperModel is called to automatically perform the search process on the dataset (X_train, y_train) and record the current best model parameters.
+
     ```python
     model.search(X_train, y_train, X_eval, y_eval, **kwargs)
     ```
+
 5. One can get the best model in the following way:
+
     ```python
     best_model = model.get_best_trial()
     ```
-Now we can celebrate the fine-tuned KNN model! 
+
+Now we can celebrate the fine-tuned KNN model!
 
 The convenience of following this procedure lies in that one needs not to develop anything else to perform parameter tuning of the KNN model for other classification task datasets without categorical features. Instead, simply passing these datasets to the ```search``` method of the ```KnnModel``` will return us the model with suitable parameters.
 
 However, readers will also immediately notice that, before sending the dataset to the model, one has to manually handle the categorical features of some dataset if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want our AutoML tool to be able to perform more things like data cleaning. It is therefore a great idea to extend our AutoML tool for the KNN model to automate the full pipeline of machine learning task once for all. These are exactly the topics of the [next section](#sec_eg).
 
 ## Building your full-pipeline AutoML tool for KNN<span id=sec_eg>
-Typically, the procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpose of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets. 
+
+Typically, the procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpose of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets.
 
 The most important part and the primary work we will do is to extend our search space based on the introduction of the basic building blocks of ```Hypernets``` in last section. For clarity, we still follow the 3 steps of developing our AutoML tools for full-pipeline KNN model with ```Hypernets``` as indicated before.
 
-
-- ***Designing a search space.*** To enable our AutoML tool to perform things like data    preprocessing, we need to encapsulate these procedures to module spaces to our search space, a ```HyperSpace``` object, and then connect them using the ```ConnectionSpace``` as introduced above. For this reason, these module spaces are now divided into two kinds: one containing the **preprocessor** and the other for **machine learning model**, i.e. KNN model here. We now devote to wrapping these two kinds of module spaces into our search space respectively for full-pipeline AutoML process. 
+- ***Designing a search space.*** To enable our AutoML tool to perform things like data    preprocessing, we need to encapsulate these procedures to module spaces to our search space, a ```HyperSpace``` object, and then connect them using the ```ConnectionSpace``` as introduced above. For this reason, these module spaces are now divided into two kinds: one containing the **preprocessor** and the other for **machine learning model**, i.e. KNN model here. We now devote to wrapping these two kinds of module spaces into our search space respectively for full-pipeline AutoML process.
 
     Preprocessors in a search space are connected through ```pipeline```. Since both of them are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` package where they are already well defined and need not be modified much. The module spaces for preprocessors are created and connected by calling the function ```create_preprocessor``` and should be implemented before machine learning models.
 
-    On the other hand, building the module space for our KNN model needs extra effort. We do this by introducing a class ```_HypreEstimatorCreator``` so that one can easily generalize the method presented here to incude other kinds of machine learning models. Then calling the function ```create_estimators```will return the module space of our KNN model. 
-    
-    We can now define a class ```KnnSearchSpaceGenerator``` as we did for defining the ```Param_space``` in last section to obtain the search space which include the ```create_preprocessor``` and ```create_estimators``` as its methods. Moreover, we emphasize that it is fairly easy to manipulate the initializations of the models or even include other machine learning models provided by scikit-learn such as support vector machines into our search space. 
+    On the other hand, building the module space for our KNN model needs extra effort. We do this by introducing a class ```_HypreEstimatorCreator``` so that one can easily generalize the method presented here to incude other kinds of machine learning models. Then calling the function ```create_estimators```will return the module space of our KNN model.
+
+    We can now define a class ```KnnSearchSpaceGenerator``` as we did for defining the ```Param_space``` in last section to obtain the search space which include the ```create_preprocessor``` and ```create_estimators``` as its methods. Moreover, we emphasize that it is fairly easy to manipulate the initializations of the models or even include other machine learning models provided by scikit-learn such as support vector machines into our search space.
+
     ```python
     class KnnSearchSpaceGenerator(object):
         def __init__(self, **kwargs) -> None:
@@ -254,7 +278,9 @@ The most important part and the primary work we will do is to extend our search 
             return space
 
     ```
+
     where ```_merge_dict``` and ```_HyperEstimatorCreator``` are defined by
+
     ```python
     def _merge_dict(*args):
         d = {}
@@ -275,7 +301,9 @@ The most important part and the primary work we will do is to extend our search 
         def __call__(self, *args, **kwargs):
             return self.estimator_cls(self.estimator_fit_kwargs, **self.estimator_init_kwargs)
     ```
+
 - ***Constructing the Hypermodel.*** Similar to last section, to construct the HyperModel(named as ```KnnModel```) one only needs to define two functions properly: ```_get_estimator``` and ```load_estimator```. Other necessary parts of it have already been well defined.
+
     ```python
     class KnnModel(HyperModel):
 
@@ -295,9 +323,11 @@ The most important part and the primary work we will do is to extend our search 
             assert model_file is not None
             return KnnEstimator.load(model_file)
     ```
-- ***Building the Estimator.*** One may immediately notice that we nearly did nothing in last step. Is our Hypermodel defined there a unique one? The answer is positive. The uniqueness of ```HyperModel``` built for a specific machine learning model, e.g. the Hypermodel for KNN or support vector machine, is provided by its associated Estimator through receiving the corresponding search space. As discussed before, the Estimator used in ```Hypernets``` is a more general notion than the usual one--the machine learning model--which is a fraction of the Estimator but also the origin of the uniqueness of each Estimator because the steps before introducing machine learning models to the full-pipeline modeling are usually common for different cases. As a result, although an Estimator usually includes many arguments and functions to support advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch when we want to extend our procedures to other machine learning models. 
-    
+
+- ***Building the Estimator.*** One may immediately notice that we nearly did nothing in last step. Is our Hypermodel defined there a unique one? The answer is positive. The uniqueness of ```HyperModel``` built for a specific machine learning model, e.g. the Hypermodel for KNN or support vector machine, is provided by its associated Estimator through receiving the corresponding search space. As discussed before, the Estimator used in ```Hypernets``` is a more general notion than the usual one--the machine learning model--which is a fraction of the Estimator but also the origin of the uniqueness of each Estimator because the steps before introducing machine learning models to the full-pipeline modeling are usually common for different cases. As a result, although an Estimator usually includes many arguments and functions to support advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch when we want to extend our procedures to other machine learning models.
+
     The implementation details are presented in ...Here we only introduce some main methods.
+
     ```python
     class KnnEstimator(Estimator):
         
@@ -375,7 +405,9 @@ The most important part and the primary work we will do is to extend our search 
             # load the model
             ...
     ```
+
     There are extra things need to be noted: our AutoML for KNN model should be utilized as in a module space and automatically adjust itself for the classification or regression task. For this purpose, a ```HyperEstimator``` is defined and ```ComplexKnn``` is provided to wrap the KNN for our full-pipeline machine learning modeling:
+
     ```python
     class ComplexKnn(HyperEstimator):
         def __init__(self, fit_kwargs, n_neighbors=2, weights='uniform', algorithm='brute', 
@@ -391,9 +423,11 @@ The most important part and the primary work we will do is to extend our search 
                 knn = KNNClassifierWrapper(**kwargs)
             return knn     
     ```
+
     Please refer ```estimator.py``` for further details.
 
-We now have the complete AutoML tool for full-pipeline machine learning modeling with KNN! Let's try this for a simple example. 
+We now have the complete AutoML tool for full-pipeline machine learning modeling with KNN! Let's try this for a simple example.
+
 ```python
 #Load the data and suppose that the task is multi-classification
 from sklearn.model_selection import train_test_split
@@ -412,4 +446,5 @@ model = KnnModel(searcher, task='multiclass', reward='accuracy')
 #Call the 'search' method
 model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
-With this kind of AutoML tool, we can simply pass the datasets to our models without considering issues regarding the datasets. More importantly, our procedures presented here can be easily generalized to other machine learning models. There are also many techniques such as cross validation of ```Hypernets``` which can be added to our toy model to improve its performance. 
+
+With this kind of AutoML tool, we can simply pass the datasets to our models without considering issues regarding the datasets. More importantly, our procedures presented here can be easily generalized to other machine learning models. There are also many techniques such as cross validation which can be added to our toy model to improve its performance. We will leave these contents for future discussions.
