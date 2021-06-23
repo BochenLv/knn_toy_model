@@ -70,6 +70,8 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
         # basic kinds of the HyperSpace. In other words, all values of the returned 
         # dictionary are parts of the parameter space if they are Choice(). 
         def knn(self):
+            # cls: the name of the machine learning model
+            # other parameters are all parameters of KNN, which is imported from sklearn
             return dict(
                 cls=neighbors.KNeighborsClassifier,
                 n_neighbors=Choice([2, 3, 5, 6]),
