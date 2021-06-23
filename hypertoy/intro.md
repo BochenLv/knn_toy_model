@@ -412,3 +412,4 @@ model = KnnModel(searcher, task='multiclass', reward='accuracy')
 #Call the 'search' method
 model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
+With this kind of AutoML tool, we can simply pass the datasets to our models without considering issues regarding the datasets. More importantly, our procedures presented here can be easily generalized to other machine learning models. There are also many techniques such as cross validation of ```Hypernets``` which can be added to our toy model to improve its performance. 
