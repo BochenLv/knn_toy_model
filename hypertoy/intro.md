@@ -190,34 +190,12 @@ However, readers will also immediately notice that, before sending the dataset t
 ## Building your full-pipeline AutoML tool for KNN<span id=sec_eg>
 The procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpse of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets. 
 
-Based on the introduction of the basic building blocks of ```Hypernets``` in the last section, the most important part and the primary work we will do is to extend our search space. 
+The most important part and the primary work we will do is to extend our search space based on the introduction of the basic building blocks of ```Hypernets``` in the last section. For clarity, we still follow the 3 steps of developing our AutoML tools for full-pipeline KNN model with ```Hypernets``` as indicated before.
 
 
+- ***Designing a search space.*** To enable our AutoML tool to perform things like data preprocessing, we need to encapsulate these procedures to module spaces to our search space, a ```HyperSpace``` object. These module spaces are now divided into two kinds: one containing the **preprocessor** and the other for **machine learning model**. 
 
-
-
-For clarity, With this search space in hand, the readers then choose a searcher from those defined in the ```Hypernets```, such as ```RandomSearcher```, whose functionality is to repeatedly 'search' samples from the search space. This searcher is then passed as an argument to your model, an object inherited from the ```Hypermodel```. Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
-```python
-#Load the data and suppose that the task is multi-classification
-from sklearn.model_selection import train_test_split
-X, y = load_your_data()
-X_train, y_train, X_test, y_test = train_test_split(X, y, test_size=0.1)
-
-#Design a search space
-search_space = get_your_search_space
-
-#Choose a searcher from the Hypernets searchers
-searcher = Your_searcher(search_space, other_arguments)
-
-#Pass the searcher as an argument to your model, a Hypermodel object
-model = Your_Hypermodel(searcher, task='multiclass', other_arguments)
-
-#Call the 'search' method
-model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
-```
-
-### Designing a search space
-The search space, an object of the ```Hyperspace``` defined in the ```Hypernets```, is composed of two important components: the ***preprocessor***, which focuses on the data preprocessing and the feature engineerings such that the data and features can be treated by the estimators properly, and the ***estimators***, whose implementation details will be discussed [later](#sec_model) and here we simply assume that the estimators are magically provided. Therefore, to successfully design a search space, we need a ```SearchSpaceGenerator``` to wrap these two components as a whole. 
+Therefore, to successfully design a search space, we need a ```SearchSpaceGenerator``` to wrap these two components as a whole. 
 
 **Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. Readers can also modify the ```create_preprocessor``` to manipulate the preprocessings of the data. 
 
@@ -298,14 +276,7 @@ class KNNSearchSpaceGenerator(SearchSpaceGenerator):
 ```
  Following the same way, readers can define their own search space by modifying this file or ```search_space.py``` of the ```HyperGMB``` accordingly.
 
-### Choosing a searcher
-Since many efficient searchers have already been provided in the ```Hypernets```,  it is fairly easy for the readers to simply choose one of them and send the search space you just defined to this searcher. For example,
-```python
-searcher = RandomSearcher(search_space)
-```
-One can also take more efforts to design new kinds of searcher by refering to [Searcher](#sec_searcher).
-
-### Constructing the Hypermodel to receive the searcher<span id=sec_model> 
+- ***Constructing the Hypermodel.*** to receive the searcher<span id=sec_model> 
 This section needs additional attention for its importance. Here, we devote to constructing the ```HyperYourModel``` of your task, which is an object inherited from the ```Hypermodel``` of the ```Hypernets```. For our example of k-nearest neighbors, this is simply named as ```toy_KNN```. It is not hard for the readers to build ```HyperYourModel``` with models other than the k-nearest neighbors by following steps discussed in this section. 
 
 Basically, to define a class ```HyperYourModel```, one needs to define two functions properly: 
@@ -332,4 +303,32 @@ Basically, to define a class ```HyperYourModel```, one needs to define two funct
     abc
     cde
     fg
-### Calling the ```search``` method
+- ***Building the estimator.***
+
+Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
+```python
+#Load the data and suppose that the task is multi-classification
+from sklearn.model_selection import train_test_split
+X, y = load_your_data()
+X_train, y_train, X_test, y_test = train_test_split(X, y, test_size=0.1)
+
+#Design a search space
+search_space = get_your_search_space
+
+#Choose a searcher from the Hypernets searchers
+searcher = Your_searcher(search_space, other_arguments)
+
+#Pass the searcher as an argument to your model, a Hypermodel object
+model = Your_Hypermodel(searcher, task='multiclass', other_arguments)
+
+#Call the 'search' method
+model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
+```
+
+
+### Choosing a searcher
+Since many efficient searchers have already been provided in the ```Hypernets```,  it is fairly easy for the readers to simply choose one of them and send the search space you just defined to this searcher. For example,
+```python
+searcher = RandomSearcher(search_space)
+```
+One can also take more efforts to design new kinds of searcher by refering to [Searcher](#sec_searcher).
