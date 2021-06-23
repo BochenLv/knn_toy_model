@@ -375,7 +375,7 @@ The most important part and the primary work we will do is to extend our search 
             # load the model
             ...
     ```
-
+    There is one extra thing needs to be noted: our AutoML for KNN model should automatically adjust itself for the classification or regression task. 
 Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
 ```python
 #Load the data and suppose that the task is multi-classification
