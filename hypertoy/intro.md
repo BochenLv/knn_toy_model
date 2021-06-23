@@ -193,8 +193,7 @@ Typically, the procedures of a full-pipeline machine learning modeling range fro
 The most important part and the primary work we will do is to extend our search space based on the introduction of the basic building blocks of ```Hypernets``` in the last section. For clarity, we still follow the 3 steps of developing our AutoML tools for full-pipeline KNN model with ```Hypernets``` as indicated before.
 
 
-- ***Designing a search space.*** To enable our AutoML tool to perform things like data preprocessing, we need to encapsulate these procedures to module spaces to our search space, a ```HyperSpace``` object. These module spaces are now divided into two kinds: one containing the **preprocessor** and the other for **machine learning model**. 
-Therefore, to successfully design a search space, we need a ```SearchSpaceGenerator``` to wrap these two components as a whole. 
+- ***Designing a search space.*** To enable our AutoML tool to perform things like data preprocessing, we need to encapsulate these procedures to module spaces to our search space, a ```HyperSpace``` object. These module spaces are now divided into two kinds: one containing the **preprocessor** and the other for **machine learning model**. We now devote to wrapping these two components into our search space respectively. 
 
     **Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. Readers can also modify the ```create_preprocessor``` to manipulate the preprocessings of the data. 
 
@@ -207,30 +206,76 @@ Therefore, to successfully design a search space, we need a ```SearchSpaceGenera
     ```
     Details for the search space of the k-nearest neighbors are presented in ```search_space.py```, where the class ```KNNSearchSpaceGenerator``` is structured as
     ```python
-    class KNNSearchSpaceGenerator(SearchSpaceGenerator):
-        def __init__(self, **kwargs):
-            super(KNNSearchSpaceGenerator, self).__init__(**kwargs)
-
-        @property
-        def default_knn_init_kwargs(self):
-            return {'n_neighbors': Choice([1, 3, 5]),
-                    'weights': Choice(['uniform', 'distance']),
-                    'algorithm': Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
-                    'leaf_size': Choice([10, 20 ,30]),
-                    'p': Choice([1, 2]),
-                    'metric': 'minkowski',
-                    'metric_params': None,
-                    'n_jobs': None}
+    class KnnSearchSpaceGenerator(object):
+    def __init__(self, **kwargs) -> None:
+        super().__init__()
         
-        @property
-        def default_knn_fit_kwargs(self):
-            return {}
+        self.options = kwargs
 
-        @property
-        def estimators(self):
-            r = {}
-            r['knn'] = (kNNEstimator, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)
-            return r
+    @property
+    def default_knn_init_kwargs(self):
+        return {'n_neighbors': Choice([1, 3, 5]),
+                'weights': Choice(['uniform', 'distance']),
+                'algorithm': Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
+                'leaf_size': Choice([10, 20 ,30]),
+                'p': Choice([1, 2]),
+                'metric': 'minkowski',
+                'metric_params': None,
+                'n_jobs': None}
+    
+    @property
+    def default_knn_fit_kwargs(self):
+        return {}
+
+    @property
+    def estimators(self):
+        r = {}
+        r['knn'] = (kNNEstimator, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)
+        return r
+    
+    def create_preprocessor(self, hyper_input, options):
+        cat_pipeline_mode = options.pop('cat_pipeline_mode', cfg.category_pipeline_mode)
+        num_pipeline_mode = options.pop('num_pipeline_mode', cfg.numeric_pipeline_mode)
+        dataframe_mapper_default = options.pop('dataframe_mapper_default', False)
+        
+        pipelines = []
+        if cfg.category_pipeline_enabled:
+            if cat_pipeline_mode == 'simple':
+                pipelines.append(categorical_pipeline_simple()(hyper_input))
+            else:
+                pipelines.append(categorical_pipeline_complex()(hyper_input))
+
+        if num_pipeline_mode == 'simple':
+            pipelines.append(numeric_pipeline_simple()(hyper_input))
+        else:
+            pipelines.append(numeric_pipeline_complex()(hyper_input))
+
+        preprocessor = DataFrameMapper(default=dataframe_mapper_default, input_df=True, df_out=True,
+                                       df_out_dtype_transforms=[(column_object, 'int')])(pipelines)
+
+        return preprocessor
+
+    def create_estimators(self, hyper_input, options):
+        assert len(self.estimators.keys()) > 0
+
+        creators = [_HyperEstimatorCreator(pairs[0],
+                                           init_kwargs=_merge_dict(pairs[1], options.pop(f'{k}_init_kwargs', None)),
+                                           fit_kwargs=_merge_dict(pairs[2], options.pop(f'{k}_fit_kwargs', None)))
+                    for k, pairs in self.estimators.items()]
+
+        estimators = [c() for c in creators]
+        return ModuleChoice(estimators, name='estimator_options')(hyper_input)
+
+    def __call__(self, *args, **kwargs):
+        options = _merge_dict(self.options, kwargs)
+
+        space = HyperSpace()
+        with space.as_default():
+            hyper_input = HyperInput(name='input1')
+            self.create_estimators(self.create_preprocessor(hyper_input, options), options)
+            space.set_inputs(hyper_input)
+        return space
+
     ```
     Following the same way, readers can define their own search space by modifying this file or ```search_space.py``` of the ```HyperGMB``` accordingly.
 
