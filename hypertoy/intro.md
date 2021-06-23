@@ -199,7 +199,7 @@ The most important part and the primary work we will do is to extend our search 
 
     On the other hand, building the module space for our KNN model needs extra effort. We do this by introducing a class ```_HypreEstimatorCreator``` so that one can easily generalize the method presented here to incude other kinds of machine learning models. Then calling the function ```create_estimators```will return the module space of our KNN model. 
     
-    We can now define a class ```KnnSearchSpaceGenerator``` as in the last section to obtain the search space which include the ```create_preprocessor``` and ```create_estimators``` as its methods. Moreover, it is fairly easy to manipulate the initializations of the models or even include other machine learning models provided by scikit-learn such as support vector machines into our search space. 
+    We can now define a class ```KnnSearchSpaceGenerator``` as we did for defining the ```Param_space``` in the last section to obtain the search space which include the ```create_preprocessor``` and ```create_estimators``` as its methods. Moreover, we emphasize that it is fairly easy to manipulate the initializations of the models or even include other machine learning models provided by scikit-learn such as support vector machines into our search space. 
     ```python
     class KnnSearchSpaceGenerator(object):
         def __init__(self, **kwargs) -> None:
