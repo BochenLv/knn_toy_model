@@ -254,7 +254,27 @@ The most important part and the primary work we will do is to extend our search 
             return space
 
     ```
+    where ```_merge_dict``` and ```_HyperEstimatorCreator``` are defined by
+    ```python
+    def _merge_dict(*args):
+    d = {}
+    for a in args:
+        if isinstance(a, dict):
+            d.update(a)
+    return d
 
+
+    class _HyperEstimatorCreator(object):
+        def __init__(self, cls, init_kwargs, fit_kwargs):
+            super(_HyperEstimatorCreator, self).__init__()
+
+            self.estimator_cls = cls
+            self.estimator_fit_kwargs = fit_kwargs if fit_kwargs is not None else {}
+            self.estimator_init_kwargs = init_kwargs if init_kwargs is not None else {}
+
+        def __call__(self, *args, **kwargs):
+            return self.estimator_cls(self.estimator_fit_kwargs, **self.estimator_init_kwargs)
+    ```
 - ***Constructing the Hypermodel.*** to receive the searcher<span id=sec_model> 
 This section needs additional attention for its importance. Here, we devote to constructing the ```HyperYourModel``` of your task, which is an object inherited from the ```Hypermodel``` of the ```Hypernets```. For our example of k-nearest neighbors, this is simply named as ```toy_KNN```. It is not hard for the readers to build ```HyperYourModel``` with models other than the k-nearest neighbors by following steps discussed in this section. 
 
