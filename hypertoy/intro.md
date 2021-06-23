@@ -295,7 +295,7 @@ The most important part and the primary work we will do is to extend our search 
             assert model_file is not None
             return KnnEstimator.load(model_file)
     ```
-- ***Building the Estimator.*** One may immediately notice that we nearly did nothing in last step. Is our Hypermodel defined there a unique one? The answer is positive. The uniqueness of ```HyperModel``` built for a specific machine learning model, e.g. the Hypermodel for KNN or support vector machine, is provided by its associated Estimator through receiving the corresponding search space. As discussed before, the Estimator used in ```Hypernets``` is a more general notion than the usual one--the machine learning model--which is a fraction of the Estimator but also the origin of the uniqueness of each Estimator because the steps before introducing machine learning models to the full-pipeline modeling are usually common for different cases. As a result, although a Estimator usually includes many arguments and functions to support advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch when we want to extend our procedures to other machien learning models. 
+- ***Building the Estimator.*** One may immediately notice that we nearly did nothing in last step. Is our Hypermodel defined there a unique one? The answer is positive. The uniqueness of ```HyperModel``` built for a specific machine learning model, e.g. the Hypermodel for KNN or support vector machine, is provided by its associated Estimator through receiving the corresponding search space. As discussed before, the Estimator used in ```Hypernets``` is a more general notion than the usual one--the machine learning model--which is a fraction of the Estimator but also the origin of the uniqueness of each Estimator because the steps before introducing machine learning models to the full-pipeline modeling are usually common for different cases. As a result, although an Estimator usually includes many arguments and functions to support advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch when we want to extend our procedures to other machine learning models. 
     
     The implementation details are presented in ...Here we only introduce some main methods.
     ```python
@@ -375,8 +375,25 @@ The most important part and the primary work we will do is to extend our search 
             # load the model
             ...
     ```
-    There is one extra thing needs to be noted: our AutoML for KNN model should automatically adjust itself for the classification or regression task. 
-Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
+    There are extra things need to be noted: our AutoML for KNN model should be utilized as in a module space and automatically adjust itself for the classification or regression task. For this purpose, a ```HyperEstimator``` is defined and ```ComplexKnn``` is provided to wrap the KNN for our full-pipeline machine learning modeling:
+    ```python
+    class ComplexKnn(HyperEstimator):
+        def __init__(self, fit_kwargs, n_neighbors=2, weights='uniform', algorithm='brute', 
+                        leaf_size=30, p=2, metric='minkowski', metric_params=None, n_jobs=None,
+                        space=None, name=None, **kwargs):
+            ...
+            HyperEstimator.__init__(self, fit_kwargs, space, name, **kwargs)
+
+        def _build_estimator(self, task, kwargs):
+            if task == 'regression':
+                knn = KNNRegressorWrapper(**kwargs)
+            else:
+                knn = KNNClassifierWrapper(**kwargs)
+            return knn     
+    ```
+    Please refer ```estimator.py``` for further details.
+
+We now have the complete AutoML tool for full-pipeline machine learning modeling with KNN! Let's try this for a simple example. 
 ```python
 #Load the data and suppose that the task is multi-classification
 from sklearn.model_selection import train_test_split
@@ -387,61 +404,11 @@ X_train, y_train, X_test, y_test = train_test_split(X, y, test_size=0.1)
 search_space = get_your_search_space
 
 #Choose a searcher from the Hypernets searchers
-searcher = Your_searcher(search_space, other_arguments)
+searcher = GridSearcher(search_space)
 
 #Pass the searcher as an argument to your model, a Hypermodel object
-model = Your_Hypermodel(searcher, task='multiclass', other_arguments)
+model = KnnModel(searcher, task='multiclass', reward='accuracy')
 
 #Call the 'search' method
 model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
-
-
-### Choosing a searcher
-Since many efficient searchers have already been provided in the ```Hypernets```,  it is fairly easy for the readers to simply choose one of them and send the search space you just defined to this searcher. For example,
-```python
-searcher = RandomSearcher(search_space)
-```
-One can also take more efforts to design new kinds of searcher by refering to [Searcher](#sec_searcher).
-"YourModelSearchSpaceGenerator" and summarized as follows:
-    ```python
-    class YourModelSearchSpaceGenerator(SearchSpaceGenerator):
-        """
-        enable_your_model1: bool, set this as True to include model1 in the search space.
-        enable_your_model2: bool, set this as True to include model2 in the search space.
-        The readers can also add more models
-        """
-        def __init__(self, enable_your_model1=True, enable_your_model2=True, **kwargs):
-            super(YourModelSearchSpaceGenerator, self).__init__(**kwargs)
-
-        #the default initialized parameters for model1, Choice will iterate overe these parameters.
-        @property
-        def your_model1_init_kwargs(self):
-            return {'your_model1_param1': Choice([1, 2, 3]),
-                    'your_model1_param2': Choice(['good', 'great']),
-                    'your_model1_param3': None}
-        
-        #the default initialized parameters for model2
-        @property
-        def your_model2_init_kwargs(self):
-            return {'your_model2_param1': Choice([4, 5, 6]),
-                    'your_model2_param2': Choice(['trivial', 'nontrivial'])}
-
-        @property
-        def your_model1_fit_kwargs(self):
-            return {}
-
-        @property
-        def your_model2_fit_kwargs(self):
-            return {}
-
-        #return the defined estimators along with their initializations, your_model1Estimator and your_model2Estimator are assumed to be magically provided for now.
-        @property
-        def estimators(self):
-            r = {}
-            if self.enable_your_model1 = True:
-                r['your_model1'] = (your_model1Estimator, self.your_model1_init_kwargs, self.your_model1_fit_kwargs)
-            if self.enable_your_model2 = True:
-                r['your_model2'] = (your_model2Estimator, self.your_model2_init_kwargs, self.your_model2_fit_kwargs)
-            return r
-    ```
