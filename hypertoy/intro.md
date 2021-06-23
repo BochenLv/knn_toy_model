@@ -193,15 +193,13 @@ Typically, the procedures of a full-pipeline machine learning modeling range fro
 The most important part and the primary work we will do is to extend our search space based on the introduction of the basic building blocks of ```Hypernets``` in the last section. For clarity, we still follow the 3 steps of developing our AutoML tools for full-pipeline KNN model with ```Hypernets``` as indicated before.
 
 
-- ***Designing a search space.*** To enable our AutoML tool to perform things like data preprocessing, we need to encapsulate these procedures to module spaces to our search space, a ```HyperSpace``` object, and then connect them using the ```connection space``` as introduced above. For this reason, these module spaces are now divided into two kinds: one containing the **preprocessor** and the other for **machine learning model**, i.e. KNN model here. We now devote to wrapping these two components into our search space respectively. 
+- ***Designing a search space.*** To enable our AutoML tool to perform things like data    preprocessing, we need to encapsulate these procedures to module spaces to our search space, a ```HyperSpace``` object, and then connect them using the ```connection space``` as introduced above. For this reason, these module spaces are now divided into two kinds: one containing the **preprocessor** and the other for **machine learning model**, i.e. KNN model here. We now devote to wrapping these two kinds of module spaces into our search space respectively for full-pipeline AutoML process. 
 
-    **Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. Readers can also modify the ```create_preprocessor``` to manipulate the preprocessings of the data. 
+    Preprocessors in a search space are connected through ```pipeline```. Since both of them are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` package where they are already well defined and need not be modified much. The module spaces for preprocessors are created and connected by calling the function ```create_preprocessor``` and should be implemented before machine learning models.
 
-    Likewise, the **estimators** in the search space are created by calling the function ```create_estimators```, which, on the other hand, needs to be carefully modified for your specific models, i.e. k-nearest neighbors here. 
-
-    Now we can define a class ```SearchSpaceGenerator``` which has the above functions as its methods for the purpose of designing a specific search space. Moreover, to conveniently manipulate the initializations of the models or even include other models defined in scikit-learn such as support vector machines into our search space, we can further define a subclass of ```SearchSpaceGenerator```, which can be named as 
-    Finally, a search space can be created in the following way 
-    Details for the search space of the k-nearest neighbors are presented in ```search_space.py```, where the class ```KNNSearchSpaceGenerator``` is structured as
+    On the other hand, building the module space for our KNN model needs extra effort. We do this by introducing a class ```_HypreEstimatorCreator``` so that one can easily generalize the method presented here to incude other kinds of machine learning models. Then calling the function ```create_estimators```will return the module space of our KNN model. 
+    
+    We can now define a class ```KnnSearchSpaceGenerator``` as in the last section to obtain the search space which include the ```create_preprocessor``` and ```create_estimators``` as its methods. Moreover, it is fairly easy to manipulate the initializations of the models or even include other machine learning models provided by scikit-learn such as support vector machines into our search space. 
     ```python
     class KnnSearchSpaceGenerator(object):
         def __init__(self, **kwargs) -> None:
@@ -256,7 +254,6 @@ The most important part and the primary work we will do is to extend our search 
             return space
 
     ```
-    Following the same way, readers can define their own search space by modifying this file or ```search_space.py``` of the ```HyperGMB``` accordingly.
 
 - ***Constructing the Hypermodel.*** to receive the searcher<span id=sec_model> 
 This section needs additional attention for its importance. Here, we devote to constructing the ```HyperYourModel``` of your task, which is an object inherited from the ```Hypermodel``` of the ```Hypernets```. For our example of k-nearest neighbors, this is simply named as ```toy_KNN```. It is not hard for the readers to build ```HyperYourModel``` with models other than the k-nearest neighbors by following steps discussed in this section. 
