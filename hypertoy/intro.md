@@ -300,31 +300,9 @@ The most important part and the primary work we will do is to extend our search 
         assert model_file is not None
         return toy_KNN_estimator.load(model_file)
     ```
-
-
-1. A function that returns the estimator of the HyperYourModel from the search space returned by the searcher
-    ```python 
-    def _get_estimator(space_sample):
-        #space_sample, a Hyperspace, is returned by a searcher
-        estimator = HyperYourModelEstimator(some_args)
-        return estimator 
-    ```
-    This function overwrites the ```_get_estimator``` method of the ```Hypermodel```, from which the ```HyperYourModel``` is inherited. One may immediately notice that the returned estimators are actually ```HyperYourModelEstimator```, not the typical "estimator" which usually refers to some m 
-    
-    The uniqueness of each ```HyperYourModel```, e.g. the Hypermodels with k-nearest neighbors or support vector machine, is provided by the class ```HyperYourModelEstimator``` through receiving different search space returned by the searcher. We discuss this uniqueness now and name our special HyperYourModelEstimator as ```toy_KNN_estimator``` since we are taking the k-nearest neighbors as our example. Although a ```HyperYourModelEstimator``` usually includes many arguments and functions to support some advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch for the reason that many of the arguments and functions have already been provided in the ```HyperGBMEstimator``` of the ```HyperGMB``` package. The more deep reason for this convenience lies in the fact that the ```HyperYourModelEstimator``` should be a more general "estimator" which not only includes the typical estimators, i.e. machine learning models, but also the whole pipeline from the data transformations to the machine learning models, where the steps before introducing these machine learning models to the pipeline are common in different cases. The uniqueness is then due to the new estimators, i.e. machine learning models, that you include into your search space when it is designed and was assumed to be magically provided there. 
+    One may immediately notice that we nearly did nothing in this step. Is our Hypermodel defined here a unique one? The answer is positive. The uniqueness of ```HyperModel``` built for a specific machine learning model, e.g. the Hypermodel for KNN or support vector machine, is provided by its associated HyperEstimator through receiving the corresponding search space. As we discussed, the HyperEstimator used in ```Hypernets``` is a more general notion than the usual one--the machine learning model--which is a fraction of the HyperEstimator but also the origin of the uniqueness of each HyperEstimator because the steps before introducing machine learning models to the full-pipeline modeling are usually common for different cases. As a result, although a HyperEstimator usually includes many arguments and functions to support advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch when we want to extend our procedures to other machien learning models. 
     
     We now turn to the implementation details of defining new estimators to explain the reason for such uniqueness. 
-
-2. A function which loads and returns the HyperEstimator for the desired model, for example
-    ```python
-    def load_estimator(self, model_file):
-        #load the details of the model from the model_file
-        assert model_file is not None
-        return HyperYourModelEstimator.load(model_file)
-    ```
-    abc
-    cde
-    fg
 - ***Building the estimator.***
 
 Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
