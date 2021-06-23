@@ -188,7 +188,7 @@ The convenience of following this procedure lies in that one needs not to develo
 However, readers will also immediately notice that, before sending the dataset to the model, one has to manually handle the categorical features of some dataset if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want our AutoML tool to be able to perform more things like data cleaning. It is therefore a great idea to extend our AutoML tool for the KNN model to automate the full pipeline of machine learning task once for all. These are exactly the topics of the [next section](#sec_eg).
 
 ## Building your full-pipeline AutoML tool for KNN<span id=sec_eg>
-Typically, the procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpse of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets. 
+Typically, the procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpose of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets. 
 
 The most important part and the primary work we will do is to extend our search space based on the introduction of the basic building blocks of ```Hypernets``` in last section. For clarity, we still follow the 3 steps of developing our AutoML tools for full-pipeline KNN model with ```Hypernets``` as indicated before.
 
@@ -277,39 +277,34 @@ The most important part and the primary work we will do is to extend our search 
     ```
 - ***Constructing the Hypermodel.*** Similar to last section, to construct the HyperModel(named as ```KnnModel```) one only needs to define two functions properly: ```_get_estimator``` and ```load_estimator```. Other necessary parts of it have already been well defined.
     ```python
-    class toy_KNN(HyperModel):
-    """
-    KNN as a toy example. This class includes several methods as explained below.
-    _get_estimator: return a knn estimator
-    load_estimatro: load previously saved model
-    """
+    class KnnModel(HyperModel):
 
-    def __init__(self, searcher, dispatcher=None, callbacks=None, reward_metric='accuracy', task=None,
-                 discriminator=None, data_cleaner_params=None):
-        self.data_cleaner_params = data_cleaner_params
+        def __init__(self, searcher, dispatcher=None, callbacks=None, reward_metric='accuracy', task=None,
+                    discriminator=None, data_cleaner_params=None):
+            self.data_cleaner_params = data_cleaner_params
 
-        HyperModel.__init__(self, searcher, dispatcher=dispatcher, callbacks=callbacks, reward_metric=reward_metric,
-                            task=task, discriminator=discriminator)
+            HyperModel.__init__(self, searcher, dispatcher=dispatcher, callbacks=callbacks, reward_metric=reward_metric,
+                                task=task, discriminator=discriminator)
 
-    def _get_estimator(self, space_sample):
-        estimator = toy_KNN_estimator(task=self.task, space_sample=space_sample,
-                                      data_cleaner_params=self.data_cleaner_params)
-        return estimator
+        def _get_estimator(self, space_sample):
+            estimator = KnnEstimator(task=self.task, space_sample=space_sample,
+                                        data_cleaner_params=self.data_cleaner_params)
+            return estimator
 
-    def load_estimator(self, model_file):
-        assert model_file is not None
-        return toy_KNN_estimator.load(model_file)
+        def load_estimator(self, model_file):
+            assert model_file is not None
+            return KnnEstimator.load(model_file)
     ```
-- ***Building the Estimator.*** One may immediately notice that we nearly did nothing in last step. Is our Hypermodel defined there a unique one? The answer is positive. The uniqueness of ```HyperModel``` built for a specific machine learning model, e.g. the Hypermodel for KNN or support vector machine, is provided by its associated (Hyper)Estimator through receiving the corresponding search space. As discussed before, the (Hyper)Estimator used in ```Hypernets``` is a more general notion than the usual one--the machine learning model--which is a fraction of the (Hyper)Estimator but also the origin of the uniqueness of each (Hyper)Estimator because the steps before introducing machine learning models to the full-pipeline modeling are usually common for different cases. As a result, although a (Hyper)Estimator usually includes many arguments and functions to support advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch when we want to extend our procedures to other machien learning models. 
+- ***Building the Estimator.*** One may immediately notice that we nearly did nothing in last step. Is our Hypermodel defined there a unique one? The answer is positive. The uniqueness of ```HyperModel``` built for a specific machine learning model, e.g. the Hypermodel for KNN or support vector machine, is provided by its associated Estimator through receiving the corresponding search space. As discussed before, the Estimator used in ```Hypernets``` is a more general notion than the usual one--the machine learning model--which is a fraction of the Estimator but also the origin of the uniqueness of each Estimator because the steps before introducing machine learning models to the full-pipeline modeling are usually common for different cases. As a result, although a Estimator usually includes many arguments and functions to support advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch when we want to extend our procedures to other machien learning models. 
     
     The implementation details are presented in ...Here we only introduce some main methods.
     ```python
-    class toy_KNN_estimator(Estimator):
+    class KnnEstimator(Estimator):
         
         def __init__(self, task, space_sample, data_cleaner_params=None):
             # space_sample is sampled from the search space by the searcher.
     
-            super(toy_KNN_estimator, self).__init__(space_sample=space_sample, task=task)    
+            super(KnnEstimator, self).__init__(space_sample=space_sample, task=task)    
             self.data_pipeline = None
             self.data_cleaner_params = data_cleaner_params
             self.data_cleaner = None
@@ -372,14 +367,13 @@ The most important part and the primary work we will do is to extend our search 
             return scores
         
         def save(self, model_file):
-            with fs.open(f'{model_file}', 'wb') as output:
-                pickle.dump(self, output, protocol=pickle.HIGHEST_PROTOCOL)
+            # Save the model configuration
+            ...
         
         @staticmethod
         def load(model_file):
-            with fs.open(f'{model_file}', 'rb') as input:
-                model = pickle.load(input)
-                return model
+            # load the model
+            ...
     ```
 
 Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
