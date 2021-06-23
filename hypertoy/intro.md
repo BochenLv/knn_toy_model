@@ -257,11 +257,11 @@ The most important part and the primary work we will do is to extend our search 
     where ```_merge_dict``` and ```_HyperEstimatorCreator``` are defined by
     ```python
     def _merge_dict(*args):
-    d = {}
-    for a in args:
-        if isinstance(a, dict):
-            d.update(a)
-    return d
+        d = {}
+        for a in args:
+            if isinstance(a, dict):
+                d.update(a)
+        return d
 
 
     class _HyperEstimatorCreator(object):
@@ -302,8 +302,8 @@ The most important part and the primary work we will do is to extend our search 
     ```
     One may immediately notice that we nearly did nothing in this step. Is our Hypermodel defined here a unique one? The answer is positive. The uniqueness of ```HyperModel``` built for a specific machine learning model, e.g. the Hypermodel for KNN or support vector machine, is provided by its associated HyperEstimator through receiving the corresponding search space. As we discussed, the HyperEstimator used in ```Hypernets``` is a more general notion than the usual one--the machine learning model--which is a fraction of the HyperEstimator but also the origin of the uniqueness of each HyperEstimator because the steps before introducing machine learning models to the full-pipeline modeling are usually common for different cases. As a result, although a HyperEstimator usually includes many arguments and functions to support advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch when we want to extend our procedures to other machien learning models. 
     
-    We now turn to the implementation details of defining new estimators to explain the reason for such uniqueness. 
-- ***Building the estimator.***
+    We now turn to the implementation details of building new estimators to explain the reason for such uniqueness. 
+- ***Building the Estimator.***
 
 Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
 ```python
