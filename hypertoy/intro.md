@@ -4,7 +4,7 @@ Parameter tuning is an inevitable step for successfully implementing a machine l
 
 The answer is positive. 
 
-```Hypernets```, a unified Automated Machine learning(AutoML) framework, offers us a very simple way to solve such problems. Taking the parameter tuning problem of the KNN model as an example, using a ```param_tuning``` function from the ```Hypernets```, the only required work for us is to define a function serving as the measure of the quality of a set of given parameters.
+```Hypernets```, a unified Automated Machine learning(AutoML) framework, offers us a very simple way to solve such problems. Taking the parameter tuning problem of the KNN model as an example, using a ```search_param``` function from the ```Hypernets```, the only required work for us is to define a function serving as the measure of the quality of a set of given parameters.
 ```python
 from sklearn import neighbor
 
@@ -23,7 +23,7 @@ def score_function(X_train, y_train, X_evl, y_evl,
     scores = model.score(X_evl, y_evl) #This score is taken as mean accuracy of the model on (X_evl, y_evl)
     return scores
 ```
-Currently, there is no need to know how the function ```param_tuning``` is able to perform parameter tuning by utilizing the above score function--we only manually provide possible values we like to ```Choice()``` for each tunable parameter. Now let's use the ```param_tuning``` function with the gird search algorithm, or other search algorithms such as random search or Monte-Carlo Tree search, to find the suitable parameter values for our KNN model by simply passing the ```score_function``` defined above as an argument to it:
+Currently, there is no need to know how the function ```search_param``` is able to perform parameter tuning by utilizing the above score function--we only manually provide possible values we like to ```Choice()``` for each tunable parameter. Now let's use the ```search_param``` function with the gird search algorithm, or other search algorithms such as random search or Monte-Carlo Tree search, to find the suitable parameter values for our KNN model by simply passing the ```score_function``` defined above as an argument to it:
 ```python
 import hypernets.utils.param_tuning as pt
 history = pt.search_params(score_function, 'grid', max_trials=10, optimize_direction='max')
@@ -35,7 +35,7 @@ best_param = history.get_best().sample
 
 This is not the whole story. 
 
-Parameter tuning is only a fraction of the full-pipeline AutoML process and ```Hypernets``` is capable of doing far more things than just performing parameter tuning. In the following sections, we will briefly introduce ```Hypernets``` as an AutoML framework and wish to clarify: 
+Parameter tuning is only a fraction of the full-pipeline AutoML process and ```Hypernets``` is capable of doing far more things than just tuning parameters. In the following sections, we will briefly introduce ```Hypernets``` as an AutoML framework and wish to clarify: 
 - the basic building blocks of ```Hypernets```;
 - basic procedures to develop an AutoML tool for parameter tuning problem and the more general full-pipeline machine learning modeling;
 - some advanced features of ```Hypernets```.
@@ -45,7 +45,7 @@ Parameter tuning is only a fraction of the full-pipeline AutoML process and ```H
 ```Hypernets``` is an AutoML framework that allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework. 
 
 ```Hypernets``` can save such efforts to a large extent while offering more possibilities. 
-- First, it decouples the basic components of a general AutoML procedure (Fig. \ref) as four distinct parts: the ```HyperSpace```, the ```Searcher```, the ```HyperModel```, and the ```Estimation Strategy``` (Fig. \ref). This idea is motivated by allowing users to manipulate each component of an AutoML model with ```Hypernets``` accordingly for different purposes. 
+- First, it decouples the basic components of a general AutoML procedure (Fig. \ref) as four distinct parts: the ```HyperSpace```, the ```Searcher```, the ```HyperModel```, and the ```Estimation Strategy``` (Fig. \ref). This idea is motivated by allowing users to manipulate different components of an AutoML tool built with ```Hypernets``` accordingly for different purposes. 
 - Second, the ```HyperSpace``` is designed to be a powerful search space. The ```HyperSpace``` consists of three different kinds of space: the **module space**, the **parameter space** and the **connection space**, where the module space is designed to contain various machine learning models, data preprocessing or feature engineerings, the parameter space provides the parameters to be searched for machine learning models and the connection space determines the way how different module spaces connect. These connected module spaces and parameter spaces finally give us a highly comprehensive search space. This search space is able to describe the full-pipeline machine learning modeling ranging from data preprocessing to model ensemble. 
 - Third, ```Hypernets``` provides many search algorithms including simple methods, such as Random Search and Grid Search, and advanced ones such as Monte-Carlo Tree Search. Users can not only simply choose one from these efficient search methods but also similarly design new search algorithms. 
 - Finally, ```Hypernets``` also supports many advanced techniques to further improve performances of the trained machine learning models. For example, users can apply early stopping to accelerate the training process and prevent overfitting; data cleaning can be applied to improve data quality; data drift detection can be enabled to improve the generalization ability of the model, etc. 
