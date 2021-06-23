@@ -109,7 +109,7 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
         def load_estimator(self, model_file):
             return KnnEstimator.load(model_file)
     ```
-- ***Building the Estimator.*** Building the Estimator often takes the most effort for implementing a new AutoML task using ```Hypernets```. The ```Estimators``` required by ```Hypernets``` is in fact a more general notion than the frequently used one--the machine learning model. Fortunately, for our case of parameter tuning of KNN, the ```Estimator``` is easy to be implemented since the sampled search space only contains one machine learning model which is the only thing that needs to be evaluated by the ```Estimator```. Moreover, we emphasize that the actual abilities of the ```Estimator``` are not restricted to that defined in this section and we refer the readers to the [next section](#sec_eg) for further details. 
+- ***Building the Estimator.*** Building the Estimator often takes the most effort for developing a new AutoML tool using ```Hypernets```. The ```Estimators``` required by ```Hypernets``` is in fact a more general notion than the frequently used one in ```sklearn```--the machine learning model. Fortunately, for our case of parameter tuning of KNN, the ```Estimator``` is easy to be implemented since the sampled search space only contains one machine learning model which is the only thing that needs to be evaluated by the ```Estimator```. Moreover, we emphasize that the actual abilities of the ```Estimator``` are not restricted to that defined in this section and we refer the readers to the [next section](#sec_eg) for further details. 
     ```python
     class KnnEstimator(Estimator):
         def __init__(self, space_sample, task='binary'):
@@ -188,7 +188,15 @@ The convenience of following this procedure lies in that one needs not to develo
 However, readers will also immediately notice that, before sending the dataset to the model, one has to manually handle the categorical features of some dataset if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want our AutoML tool to be able to perform more things like data cleaning. It is therefore a great idea to extend our AutoML tool for the KNN model to automate the full pipeline of machine learning task once for all. These are exactly the topics of the [next section](#sec_eg).
 
 ## Building your full-pipeline AutoML tool for KNN<span id=sec_eg>
-The procedures of a full-pipeline machine learning modeling ranges from. For this purpse, we need to design a more comprehensive search space, which mainly includes transformations of the data, feature engineerings, and the desired estimators, the most important part and the primary work you will do for designing your AutoML model with the ```Hypernets```. With this search space in hand, the readers then choose a searcher from those defined in the ```Hypernets```, such as ```RandomSearcher```, whose functionality is to repeatedly 'search' samples from the search space. This searcher is then passed as an argument to your model, an object inherited from the ```Hypermodel```. Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
+The procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpse of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets. 
+
+Based on the introduction of the basic building blocks of ```Hypernets``` in the last section, the most important part and the primary work we will do is to extend our search space. 
+
+
+
+
+
+For clarity, With this search space in hand, the readers then choose a searcher from those defined in the ```Hypernets```, such as ```RandomSearcher```, whose functionality is to repeatedly 'search' samples from the search space. This searcher is then passed as an argument to your model, an object inherited from the ```Hypermodel```. Finally, the ```search``` method of the Hypermodel is called to repeat the following procedures: the searcher searches in the search space and samples a full-pipeline model from the search space, the estimator fits the sampled model of the search space, evaluates its performance, and then updating the searcher to get a new sample of the search space until the end. The above process is summarized as follows with 4 lines of codes after loading the data:
 ```python
 #Load the data and suppose that the task is multi-classification
 from sklearn.model_selection import train_test_split
@@ -207,7 +215,7 @@ model = Your_Hypermodel(searcher, task='multiclass', other_arguments)
 #Call the 'search' method
 model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
-To help the readers walk through these steps, we provide in the following subsections deploying k-nearest neighbors with the ```Hypernets``` as a simple example to examine details behind each line of the above codes.
+
 ### Designing a search space
 The search space, an object of the ```Hyperspace``` defined in the ```Hypernets```, is composed of two important components: the ***preprocessor***, which focuses on the data preprocessing and the feature engineerings such that the data and features can be treated by the estimators properly, and the ***estimators***, whose implementation details will be discussed [later](#sec_model) and here we simply assume that the estimators are magically provided. Therefore, to successfully design a search space, we need a ```SearchSpaceGenerator``` to wrap these two components as a whole. 
 
