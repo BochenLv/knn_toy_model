@@ -40,10 +40,6 @@ class SearchSpaceGenerator(object):
         
         self.options = kwargs
 
-    @property
-    def estimators(self):
-        raise NotImplementedError()
-
     def create_preprocessor(self, hyper_input, options):
         cat_pipeline_mode = options.pop('cat_pipeline_mode', cfg.category_pipeline_mode)
         num_pipeline_mode = options.pop('num_pipeline_mode', cfg.numeric_pipeline_mode)

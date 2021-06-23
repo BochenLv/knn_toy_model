@@ -90,7 +90,7 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
             with space.as_default():
                 hyper_input = HyperInput(name='input1')
                 model = self.knn #prepare the KNN model to be inclued into the module space 
-                modules = [ModuleSpace(name=f'{model["cls"].__name__}', **model)] #make a module space of the HyperSpace using ModuleSpace()
+                modules = [ModuleSpace(name=f'{model["cls"].__name__}', **model)] #To make a module space containing the KNN model for the HyperSpace using ModuleSpace()
                 outputs = ModuleChoice(modules)(hyper_input) #pick a model from the module space if there are mutiple ones as the output of the search space. Here we only have a KNN model.
                 space.set_inputs(hyper_input)
 
@@ -188,93 +188,51 @@ The convenience of following this procedure lies in that one needs not to develo
 However, readers will also immediately notice that, before sending the dataset to the model, one has to manually handle the categorical features of some dataset if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want our AutoML tool to be able to perform more things like data cleaning. It is therefore a great idea to extend our AutoML tool for the KNN model to automate the full pipeline of machine learning task once for all. These are exactly the topics of the [next section](#sec_eg).
 
 ## Building your full-pipeline AutoML tool for KNN<span id=sec_eg>
-The procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpse of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets. 
+Typically, the procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpse of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets. 
 
 The most important part and the primary work we will do is to extend our search space based on the introduction of the basic building blocks of ```Hypernets``` in the last section. For clarity, we still follow the 3 steps of developing our AutoML tools for full-pipeline KNN model with ```Hypernets``` as indicated before.
 
 
 - ***Designing a search space.*** To enable our AutoML tool to perform things like data preprocessing, we need to encapsulate these procedures to module spaces to our search space, a ```HyperSpace``` object. These module spaces are now divided into two kinds: one containing the **preprocessor** and the other for **machine learning model**. 
+    Therefore, to successfully design a search space, we need a ```SearchSpaceGenerator``` to wrap these two components as a whole. 
 
-Therefore, to successfully design a search space, we need a ```SearchSpaceGenerator``` to wrap these two components as a whole. 
+    **Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. Readers can also modify the ```create_preprocessor``` to manipulate the preprocessings of the data. 
 
-**Preprocessors** in a search space are connected through ```pipeline```. Since both the preprocessors and ```pipeline``` are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` where they are already well defined and need not be modified much. The preprocessors are created and connected by calling the function ```create_preprocessor```. Readers can also modify the ```create_preprocessor``` to manipulate the preprocessings of the data. 
+    Likewise, the **estimators** in the search space are created by calling the function ```create_estimators```, which, on the other hand, needs to be carefully modified for your specific models, i.e. k-nearest neighbors here. 
 
-Likewise, the **estimators** in the search space are created by calling the function ```create_estimators```, which, on the other hand, needs to be carefully modified for your specific models, i.e. k-nearest neighbors here. 
+    Now we can define a class ```SearchSpaceGenerator``` which has the above functions as its methods for the purpose of designing a specific search space. Moreover, to conveniently manipulate the initializations of the models or even include other models defined in scikit-learn such as support vector machines into our search space, we can further define a subclass of ```SearchSpaceGenerator```, which can be named as 
+    Finally, a search space can be created in the following way
+    ```python
+    get_your_search_space = YourModelSearchSpaceGenerator()
+    ```
+    Details for the search space of the k-nearest neighbors are presented in ```search_space.py```, where the class ```KNNSearchSpaceGenerator``` is structured as
+    ```python
+    class KNNSearchSpaceGenerator(SearchSpaceGenerator):
+        def __init__(self, **kwargs):
+            super(KNNSearchSpaceGenerator, self).__init__(**kwargs)
 
-Now we can define a class ```SearchSpaceGenerator``` which has the above functions as its methods for the purpose of designing a specific search space. Moreover, to conveniently manipulate the initializations of the models or even include other models defined in scikit-learn such as support vector machines into our search space, we can further define a subclass of ```SearchSpaceGenerator```, which can be named as "YourModelSearchSpaceGenerator" and summarized as follows:
-```python
-class YourModelSearchSpaceGenerator(SearchSpaceGenerator):
-    """
-    enable_your_model1: bool, set this as True to include model1 in the search space.
-    enable_your_model2: bool, set this as True to include model2 in the search space.
-    The readers can also add more models
-    """
-    def __init__(self, enable_your_model1=True, enable_your_model2=True, **kwargs):
-        super(YourModelSearchSpaceGenerator, self).__init__(**kwargs)
+        @property
+        def default_knn_init_kwargs(self):
+            return {'n_neighbors': Choice([1, 3, 5]),
+                    'weights': Choice(['uniform', 'distance']),
+                    'algorithm': Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
+                    'leaf_size': Choice([10, 20 ,30]),
+                    'p': Choice([1, 2]),
+                    'metric': 'minkowski',
+                    'metric_params': None,
+                    'n_jobs': None}
+        
+        @property
+        def default_knn_fit_kwargs(self):
+            return {}
 
-    #the default initialized parameters for model1, Choice will iterate overe these parameters.
-    @property
-    def your_model1_init_kwargs(self):
-        return {'your_model1_param1': Choice([1, 2, 3]),
-                'your_model1_param2': Choice(['good', 'great']),
-                'your_model1_param3': None}
-    
-    #the default initialized parameters for model2
-    @property
-    def your_model2_init_kwargs(self):
-        return {'your_model2_param1': Choice([4, 5, 6]),
-                'your_model2_param2': Choice(['trivial', 'nontrivial'])}
-
-    @property
-    def your_model1_fit_kwargs(self):
-        return {}
-
-    @property
-    def your_model2_fit_kwargs(self):
-        return {}
-
-    #return the defined estimators along with their initializations, your_model1Estimator and your_model2Estimator are assumed to be magically provided for now.
-    @property
-    def estimators(self):
-        r = {}
-        if self.enable_your_model1 = True:
-            r['your_model1'] = (your_model1Estimator, self.your_model1_init_kwargs, self.your_model1_fit_kwargs)
-        if self.enable_your_model2 = True:
-            r['your_model2'] = (your_model2Estimator, self.your_model2_init_kwargs, self.your_model2_fit_kwargs)
-        return r
-```
-Finally, a search space can be created in the following way
-```python
-get_your_search_space = YourModelSearchSpaceGenerator()
-```
-Details for the search space of the k-nearest neighbors are presented in ```search_space.py```, where the class ```KNNSearchSpaceGenerator``` is structured as
-```python
-class KNNSearchSpaceGenerator(SearchSpaceGenerator):
-    def __init__(self, **kwargs):
-        super(KNNSearchSpaceGenerator, self).__init__(**kwargs)
-
-    @property
-    def default_knn_init_kwargs(self):
-        return {'n_neighbors': Choice([1, 3, 5]),
-                'weights': Choice(['uniform', 'distance']),
-                'algorithm': Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
-                'leaf_size': Choice([10, 20 ,30]),
-                'p': Choice([1, 2]),
-                'metric': 'minkowski',
-                'metric_params': None,
-                'n_jobs': None}
-    
-    @property
-    def default_knn_fit_kwargs(self):
-        return {}
-
-    @property
-    def estimators(self):
-        r = {}
-        r['knn'] = (kNNEstimator, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)
-        return r
-```
- Following the same way, readers can define their own search space by modifying this file or ```search_space.py``` of the ```HyperGMB``` accordingly.
+        @property
+        def estimators(self):
+            r = {}
+            r['knn'] = (kNNEstimator, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)
+            return r
+    ```
+    Following the same way, readers can define their own search space by modifying this file or ```search_space.py``` of the ```HyperGMB``` accordingly.
 
 - ***Constructing the Hypermodel.*** to receive the searcher<span id=sec_model> 
 This section needs additional attention for its importance. Here, we devote to constructing the ```HyperYourModel``` of your task, which is an object inherited from the ```Hypermodel``` of the ```Hypernets```. For our example of k-nearest neighbors, this is simply named as ```toy_KNN```. It is not hard for the readers to build ```HyperYourModel``` with models other than the k-nearest neighbors by following steps discussed in this section. 
@@ -332,3 +290,45 @@ Since many efficient searchers have already been provided in the ```Hypernets```
 searcher = RandomSearcher(search_space)
 ```
 One can also take more efforts to design new kinds of searcher by refering to [Searcher](#sec_searcher).
+"YourModelSearchSpaceGenerator" and summarized as follows:
+    ```python
+    class YourModelSearchSpaceGenerator(SearchSpaceGenerator):
+        """
+        enable_your_model1: bool, set this as True to include model1 in the search space.
+        enable_your_model2: bool, set this as True to include model2 in the search space.
+        The readers can also add more models
+        """
+        def __init__(self, enable_your_model1=True, enable_your_model2=True, **kwargs):
+            super(YourModelSearchSpaceGenerator, self).__init__(**kwargs)
+
+        #the default initialized parameters for model1, Choice will iterate overe these parameters.
+        @property
+        def your_model1_init_kwargs(self):
+            return {'your_model1_param1': Choice([1, 2, 3]),
+                    'your_model1_param2': Choice(['good', 'great']),
+                    'your_model1_param3': None}
+        
+        #the default initialized parameters for model2
+        @property
+        def your_model2_init_kwargs(self):
+            return {'your_model2_param1': Choice([4, 5, 6]),
+                    'your_model2_param2': Choice(['trivial', 'nontrivial'])}
+
+        @property
+        def your_model1_fit_kwargs(self):
+            return {}
+
+        @property
+        def your_model2_fit_kwargs(self):
+            return {}
+
+        #return the defined estimators along with their initializations, your_model1Estimator and your_model2Estimator are assumed to be magically provided for now.
+        @property
+        def estimators(self):
+            r = {}
+            if self.enable_your_model1 = True:
+                r['your_model1'] = (your_model1Estimator, self.your_model1_init_kwargs, self.your_model1_fit_kwargs)
+            if self.enable_your_model2 = True:
+                r['your_model2'] = (your_model2Estimator, self.your_model2_init_kwargs, self.your_model2_fit_kwargs)
+            return r
+    ```
