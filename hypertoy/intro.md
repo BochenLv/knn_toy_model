@@ -49,12 +49,12 @@ Parameter tuning is only a fraction of the full-pipeline AutoML process and ```H
 ## Parameter tuning for KNN with an AutoML tool built with Hypernets
 
 ```Hypernets``` is an AutoML framework that allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework.
-<a id="fig_automl"> ![Abstraction of the AutoML](./figs/AutoML_procedure.PNG) </a>
+<a id="fig_automl"> ![Abstraction of the AutoML](./figs/AutoML_procedure.png) </a>
 ```Hypernets``` can save such efforts to a large extent while offering more possibilities.
 
 - First, it decouples the basic components of a general [AutoML procedure](#fig_automl) as [four distinct parts](#fig_hypernets): the ```HyperSpace```, the ```Searcher```, the ```HyperModel```, and the ```Estimation Strategy```. This idea is motivated by allowing users to manipulate different components of an AutoML tool built with ```Hypernets``` accordingly for different purposes.
 
-<a id="fig_hypernets">![Basic building blocks of Hypernets](./figs/Hypernets.PNG)</a>
+<a id="fig_hypernets">![Basic building blocks of Hypernets](./figs/Hypernets.png)</a>
 
 - Second, the ```HyperSpace``` is designed to be a powerful search space. The ```HyperSpace``` consists of three different kinds of space: the **module space**, the **parameter space** and the **connection space**, where the module space is designed to contain various machine learning models, data preprocessing or feature engineerings, the parameter space provides the parameters to be searched for machine learning models and the connection space determines the way how different module spaces connect. These connected module spaces and parameter spaces finally give us a highly comprehensive search space which is able to describe the full-pipeline machine learning modeling ranging from data preprocessing to model ensemble.
 - Third, ```Hypernets``` provides many search algorithms including simple methods, such as Random Search and Grid Search, and advanced ones such as Monte-Carlo Tree Search. Users can not only simply choose one from these efficient search methods but also similarly design new search algorithms.
