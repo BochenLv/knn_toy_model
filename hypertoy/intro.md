@@ -1,10 +1,4 @@
-# Table of contents
-
-1. [Parameter tuning for KNN with an AutoML tool built with Hypernets](#parameter-tuning-with-an-automl-tool-built-with-hypernets)
-
-2. [Building your full-pipeline AutoML tool for KNN]<span id=sec_eg>
-
-## A Brief Tutorial for Developing AutoML Tools with Hypernets
+# A Brief Tutorial for Developing AutoML Tools with Hypernets
 
 Parameter tuning is an inevitable step for successfully building a machine learning model. Even for a simple model as K-nearest neighbors(KNN) for the classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example. Let alone models which have much more tunable parameters and have to be trained multiple times before we can pick suitable values for their parameters. Furthermore, tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts of machine learning like designing novel models while only perform procedures like parameter tuning in a simple and happy way?
 
@@ -52,7 +46,7 @@ Parameter tuning is only a fraction of the full-pipeline AutoML process and ```H
 - basic procedures to develop an AutoML tool for parameter tuning problem and the more general full-pipeline machine learning modeling;
 - some advanced features of ```Hypernets```.
 
-### Parameter tuning for KNN with an AutoML tool built with Hypernets
+## Parameter tuning for KNN with an AutoML tool built with Hypernets
 
 ```Hypernets``` is an AutoML framework that allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework.
 
@@ -216,7 +210,7 @@ The convenience of following this procedure lies in that one needs not to develo
 
 However, readers will also immediately notice that, before sending the dataset to the model, one has to manually handle the categorical features of some datasets if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want our AutoML tool to be able to perform more things like data cleaning. It is therefore a great idea to extend our AutoML tool for the KNN model to automate the full pipeline of machine learning task once for all. These are exactly the topics of the [next section](#sec_eg).
 
-### Building your full-pipeline AutoML tool for KNN<span id=sec_eg>
+## Building your full-pipeline AutoML tool for KNN<span id=sec_eg>
 
 Typically, the procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpose of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets.
 
