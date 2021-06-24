@@ -78,8 +78,8 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
         # basic kinds of the HyperSpace. In other words, all values of the returned 
         # dictionary are parts of the parameter space if they are Choice(). 
         def knn(self):
-            # cls: the name of the machine learning model
-            # other parameters are all parameters of KNN, which is imported from sklearn
+            # cls: the machine learning model
+            # other parameters are all parameters of KNN, which are defiend by sklearn
             return dict(
                 cls=neighbors.KNeighborsClassifier,
                 n_neighbors=Choice([2, 3, 5, 6]),
@@ -99,7 +99,7 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
                 hyper_input = HyperInput(name='input1')
                 model = self.knn #prepare the KNN model to be inclued into the module space 
                 modules = [ModuleSpace(name=f'{model["cls"].__name__}', **model)] #To make a module space containing the KNN model for the HyperSpace using ModuleSpace()
-                outputs = ModuleChoice(modules)(hyper_input) #pick a model from the module space if there are mutiple ones as the output of the search space. Here we only have a KNN model.
+                outputs = ModuleChoice(modules)(hyper_input) #pick models from the module space if there are mutiple ones as the output of the search space. Herse we only have a KNN model.
                 space.set_inputs(hyper_input)
 
             return space
