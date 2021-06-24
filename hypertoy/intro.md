@@ -1,4 +1,4 @@
-# A Brief Tutorial for Implementing AutoML Tools with Hypernets
+# A Brief Tutorial for Developing AutoML Tools with Hypernets
 
 Parameter tuning is an inevitable step for successfully implementing a machine learning model. Even for a simple model as K-nearest neighbors(KNN) for the classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example. Let alone models which have much more tunable parameters and have to be trained multiple times before we can pick suitable values for their parameters. Furthermore, tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts of machine learning like designing novel models while only perform procedures like parameter tuning in a simple and happy way?
 
@@ -59,7 +59,7 @@ Parameter tuning is only a fraction of the full-pipeline AutoML process and ```H
 
 Based on the above brief introduction, using the ```Hypernets``` to implement an AutoML task can now be decomposed as three parts: designing the **search space**, an instance of the ```Hyperspace```, constructing the **Hypermodel** which will be sampled from the search space using a searcher provided by ```Hypernets``` during the search process, and building the **Estimator** which receives a sampled Hypermodel, evaluates it and then returns the corresponding rewards such that the searcher can update the Hypermodel to be sampled based on the rewards.
 
-We will provide a toy example, designing an AutoML tool for KNN, to help the readers walk through the full pipeline of implementing the ```Hypernets``` to an AutoML task.
+We will provide a toy example, designing an AutoML tool for KNN, to help the readers walk through the all steps of implementing the ```Hypernets``` to an AutoML task.
 
 To reveal the core features and ideas of ```Hypernets```, we first continue to solve the problem defined in the very beginning--how to perform parameter tuning of KNN automatically using ```Hyernets```--but in a different manner: we view the parameter tuning problem as a complete AutoML task and develop a complete AutoML tool for this task from scratch using ```Hypernets```. For simplicity, we only consider the classification task, and the regression case can be easily generalized. As introduced above, this developing procedure contains 3 steps and we will simply follow these steps.
 
@@ -206,7 +206,7 @@ With the above AutoML tool, we are now ready to perform a complete automatic par
 
 Now we can celebrate the fine-tuned KNN model!
 
-The convenience of following this procedure lies in that one needs not to develop anything else to perform parameter tuning of the KNN model for other classification task datasets without categorical features. Instead, simply passing these datasets to the ```search``` method of the ```KnnModel``` will return us the model with suitable parameters.
+The convenience of following this procedure lies in that one needs not to develop anything else to perform parameter tuning of the KNN model for other classification task datasets without categorical features and . Instead, simply passing these datasets to the ```search``` method of the ```KnnModel``` will return us the model with suitable parameters.
 
 However, readers will also immediately notice that, before sending the dataset to the model, one has to manually handle the categorical features of some datasets if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want our AutoML tool to be able to perform more things like data cleaning. It is therefore a great idea to extend our AutoML tool for the KNN model to automate the full pipeline of machine learning task once for all. These are exactly the topics of the [next section](#sec_eg).
 
@@ -222,7 +222,7 @@ Therefore, the most important part and the primary work we will do is to extend 
 
     On the other hand, building the module space for our KNN model needs extra effort. We do this by introducing a class ```_HypreEstimatorCreator``` so that one can easily generalize the method presented here to incude other kinds of machine learning models. Then calling the function ```create_estimators```will return the module space of our KNN model.
 
-    We can now define a class ```KnnSearchSpaceGenerator``` as we did for defining the ```Param_space``` in last section to obtain the search space which include the ```create_preprocessor``` and ```create_estimators``` as its methods. Moreover, we emphasize that it is fairly easy to manipulate the initializations of the models or even include other machine learning models provided by scikit-learn such as support vector machines into our search space.
+    We can now define a class ```KnnSearchSpaceGenerator``` as we did for defining the ```Param_space``` in last section to obtain the search space which now includes the ```create_preprocessor``` and ```create_estimators``` as its methods. Moreover, we emphasize that it is fairly easy to manipulate the initializations of the models or even include other machine learning models provided by scikit-learn such as support vector machines into our search space.
 
     ```python
     class KnnSearchSpaceGenerator(object):
@@ -310,7 +310,7 @@ Therefore, the most important part and the primary work we will do is to extend 
     search_space_eg = KnnSearchSpaceGenerator()
     ```
 
-- ***Constructing the Hypermodel.*** Similar to last section, to construct the HyperModel(named as ```KnnModel```) one only needs to define two functions properly: ```_get_estimator``` and ```load_estimator```. Other necessary parts of it have already been well defined.
+- ***Constructing the Hypermodel.*** Similar to last section of the parameter tuning problem, to construct the HyperModel(named as ```KnnModel```) one only needs to define two functions properly: ```_get_estimator``` and ```load_estimator```. Other necessary parts of it have already been well defined in ```Hypernets```.
 
     ```python
     class KnnModel(HyperModel):
