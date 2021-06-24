@@ -206,7 +206,7 @@ With the above AutoML tool, we are now ready to perform a complete automatic par
 
 Now we can celebrate the fine-tuned KNN model!
 
-The convenience of following this procedure lies in that one needs not to develop anything else to perform parameter tuning of the KNN model for other classification task datasets without categorical features and . Instead, simply passing these datasets to the ```search``` method of the ```KnnModel``` will return us the model with suitable parameters.
+The convenience of following this procedure lies in that one needs not to develop anything else to perform parameter tuning of the KNN model for other classification task datasets without categorical features. Instead, simply passing these datasets to the ```search``` method of the ```KnnModel``` will return us the model with suitable parameters.
 
 However, readers will also immediately notice that, before sending the dataset to the model, one has to manually handle the categorical features of some datasets if there exist such things because the KNN model can not treat with categorical features properly. Some users may also want our AutoML tool to be able to perform more things like data cleaning. It is therefore a great idea to extend our AutoML tool for the KNN model to automate the full pipeline of machine learning task once for all. These are exactly the topics of the [next section](#sec_eg).
 
