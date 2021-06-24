@@ -180,13 +180,13 @@ With the above AutoML tool, we are now ready to perform a complete automatic par
     search_space = Param_space()
     ```
 
-2. Choose a searcher from those search algorithms provided by ```Hypernets```. One required  argument for the searcher is the search sapce in which the searcher will perform searching.
+2. Choose a searcher from those search algorithms provided by ```Hypernets```. One required  argument for the searcher is the search space in which the searcher will perform searching.
 
     ```python
     searcher = GridSearcher(search_space, optimize_direction=optimize_direction)
     ```
 
-3. Construct the HyperModel which receives the searcher as its required arguments. In our example, the HyperModel is the ```KnnModel```.
+3. Construct the HyperModel which receives the searcher as its required argument. In our example, the HyperModel is the ```KnnModel```.
 
     ```python
     model = KnnModel(searcher=searcher, task='multiclass', reward_metric='accuracy')
