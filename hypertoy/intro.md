@@ -105,7 +105,7 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
             return space
     ```
 
-- ***Constructing the Hypermodel.*** The HyperMdel does not require many modifications for our specific task since many core functionalities of the HyperMdel have already been well defined in ```Hypernets``` and are common across different machine learning models and tasks. We only pay attention to two functions, the ```_get_estimator```, which returns the corresponding KNN model of the sampled search space, and the ```load_estimator```, which loads the configurations of the saved model. The most important method for a HyperModel is the "search" method. By calling the ```search``` method, the search algorithm searches in the search space and returns a sample of the search space to be utilized for the HyperModel. This HyperModel is then evaluated based on the chosen reward metric and updated towards the optimizing direction.
+- ***Constructing the Hypermodel.*** The HyperModel does not require many modifications for our specific task since many core functionalities of the HyperModel have already been well defined in ```Hypernets``` and are common across different machine learning models and tasks. We only pay attention to two functions, the ```_get_estimator```, which returns the corresponding KNN model of the sampled search space, and the ```load_estimator```, which loads the configurations of the saved model. The most important method for a HyperModel is the "search" method. By calling the ```search``` method, the search algorithm searches in the search space and returns a sample of the search space to be utilized for the HyperModel. This HyperModel is then evaluated based on the chosen reward metric and updated towards the optimizing direction.
 
     ```python
     class KnnModel(HyperModel):
@@ -186,7 +186,7 @@ With the above AutoML tool, we are now ready to perform a complete automatic par
     searcher = GridSearcher(search_space, optimize_direction=optimize_direction)
     ```
 
-3. Construct the HyperMdel which receives the searcher as its required arguments. In our example, the HyperModel is the ```KnnModel```.
+3. Construct the HyperModel which receives the searcher as its required arguments. In our example, the HyperModel is the ```KnnModel```.
 
     ```python
     model = KnnModel(searcher=searcher, task='multiclass', reward_metric='accuracy')
