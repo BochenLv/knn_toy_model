@@ -220,7 +220,7 @@ Therefore, the most important part and the primary work we will do is to extend 
 
     Preprocessors in a search space are connected through ```pipeline```. Since both of them are not closely related to any specific models, fortunately, we can directly borrow them from the ```HyperGBM``` package where they are already well defined and need not be modified much. The module spaces for preprocessors are created and connected by calling the function ```create_preprocessor``` and should be implemented before machine learning models.
 
-    On the other hand, building the module space for our KNN model needs extra effort. We do this by introducing a class ```_HypreEstimatorCreator``` so that one can easily generalize the method presented here to incude other kinds of machine learning models. Then calling the function ```create_estimators```will return the module space of our KNN model.
+    On the other hand, building the module space for our KNN model needs extra effort. We do this by introducing a class ```_HypreEstimatorCreator``` so that one can easily generalize the method presented here to include other kinds of machine learning models. Then calling the function ```create_estimators```will return the module space of our KNN model.
 
     We can now define a class ```KnnSearchSpaceGenerator``` as we did for defining the ```Param_space``` in last section to obtain the search space which now includes the ```create_preprocessor``` and ```create_estimators``` as its methods. Moreover, we emphasize that it is fairly easy to manipulate the initializations of the models or even include other machine learning models provided by scikit-learn such as support vector machines into our search space.
 
@@ -334,7 +334,7 @@ Therefore, the most important part and the primary work we will do is to extend 
 
 - ***Building the Estimator.*** One may immediately notice that we nearly did nothing in last step. Is our Hypermodel defined there a unique one? The answer is positive. The uniqueness of ```HyperModel``` built for a specific machine learning model, e.g. the Hypermodel for KNN or support vector machine, is provided by its associated Estimator through receiving the corresponding search space. As discussed before, the Estimator used in ```Hypernets``` is a more general notion than the usual one--the machine learning model--which is a fraction of the Estimator but also the origin of the uniqueness of each Estimator because the steps before introducing machine learning models to the full-pipeline modeling are usually common for different cases. As a result, although an Estimator usually includes many arguments and functions to support advanced features of ```Hypernets```, fortunately, there is nearly nothing that needs to be rewritten from scratch when we want to extend our procedures to other machine learning models.
 
-    The implementation details are presented in ...Here we only introduce some main methods.
+    The implementation details are presented in ```estimator.py```. Here we only introduce some main methods.
 
     ```python
     class KnnEstimator(Estimator):
@@ -414,7 +414,7 @@ Therefore, the most important part and the primary work we will do is to extend 
             ...
     ```
 
-    There are extra things need to be noted: our AutoML for KNN model should be utilized in the form of a module space and automatically adjust itself for the classification or regression task. For these purposes, a ```ComplexKnn``` is provided to wrap the KNN to the HyperSpace for our full-pipeline machine learning modeling:
+    There are extra things need to be noted: our KNN model should be utilized in the form of a ```ModuleSpace``` in the search space and should automatically adjust itself for the classification or regression task. For these purposes, a ```ComplexKnn``` is provided to wrap the KNN to the HyperSpace for our full-pipeline machine learning modeling:
 
     ```python
     class ComplexKnn(HyperEstimator):
@@ -436,7 +436,7 @@ Therefore, the most important part and the primary work we will do is to extend 
 
     where the ```HyperEstimator``` inherits from the ```ModuleSpace``` to transfer our KNN model to a module space in the search space. Please refer ```estimator.py``` for further details.
 
-We now have the complete AutoML tool for full-pipeline machine learning modeling with KNN! Let's try this for a simple example following the routine discussed in the end of last section:
+We now have the complete AutoML tool for full-pipeline machine learning modeling with KNN! Let's try to use our extended AutoML tool for an example following the routine discussed in the end of last section:
 
 ```python
 #Load the data and suppose that the task is multi-classification
@@ -457,4 +457,4 @@ model = KnnModel(searcher, task='multiclass', reward='accuracy')
 model.search(X_train, y_train, X_eval=X_test, y_eval=y_test)
 ```
 
-With this kind of AutoML tool, we can simply pass the datasets to our models without considering issues regarding the datasets. More importantly, our procedures presented here can be easily generalized to other machine learning models. There are also many techniques such as cross validation which can be added to our toy model to improve its performance. We will leave these contents for future discussions.
+With this kind of AutoML tool, we can simply pass the datasets to our models without considering issues regarding the datasets for that our AutoML tool is designed to automate the full-pipeline of machine learning modeling. More importantly, our procedures presented here can be easily generalized to other machine learning models. There are also many techniques such as cross validation which can be further added to our toy tool to improve its performance. We will leave these contents for future discussions.
