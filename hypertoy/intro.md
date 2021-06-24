@@ -1,5 +1,9 @@
 # A Brief Tutorial for Developing AutoML Tools with Hypernets
 
+# Table of contents
+1. [Parameter tuning with an AutoML tool built with Hypernets](#Parameter tuning with an AutoML tool built with Hypernets)
+2. 
+
 Parameter tuning is an inevitable step for successfully building a machine learning model. Even for a simple model as K-nearest neighbors(KNN) for the classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example. Let alone models which have much more tunable parameters and have to be trained multiple times before we can pick suitable values for their parameters. Furthermore, tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts of machine learning like designing novel models while only perform procedures like parameter tuning in a simple and happy way?
 
 The answer is positive.
@@ -7,7 +11,7 @@ The answer is positive.
 ```Hypernets```, a unified Automated Machine learning(AutoML) framework, offers us a very simple way to solve such problems. Taking the parameter tuning problem of the KNN model as an example, using a ```search_param``` function from the ```Hypernets```, the only required work for us is to define a function serving as the measure of the quality of a set of given parameters.
 
 ```python
-from sklearn import neighbor
+from sklearn import neighbors
 
 def score_function(X_train, y_train, X_evl, y_evl, 
                    n_neighbors=Choice([3, 5, 6, 10, 20]),
@@ -46,7 +50,7 @@ Parameter tuning is only a fraction of the full-pipeline AutoML process and ```H
 - basic procedures to develop an AutoML tool for parameter tuning problem and the more general full-pipeline machine learning modeling;
 - some advanced features of ```Hypernets```.
 
-*******
+## Parameter tuning with an AutoML tool built with Hypernets
 
 ```Hypernets``` is an AutoML framework that allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework.
 
