@@ -249,7 +249,7 @@ Therefore, the most important part and the primary work we will do is to extend 
         @property
         def estimators(self):
             r = {}
-            r['knn'] = (kNNEstimator, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)
+            r['knn'] = (KnnEstimator, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)
             return r
         
         def create_preprocessor(self, hyper_input, options):
@@ -428,9 +428,9 @@ Therefore, the most important part and the primary work we will do is to extend 
 
         def _build_estimator(self, task, kwargs):
             if task == 'regression':
-                knn = KNNRegressorWrapper(**kwargs)
+                knn = KnnRegressorWrapper(**kwargs)
             else:
-                knn = KNNClassifierWrapper(**kwargs)
+                knn = KnnClassifierWrapper(**kwargs)
             return knn     
     ```
 
