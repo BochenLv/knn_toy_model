@@ -254,11 +254,13 @@ The most important part and the primary work we will do is to extend our search 
         
         def create_preprocessor(self, hyper_input, options):
                     ...
-            return preprocessor
 
         def create_estimators(self, hyper_input, options):
             assert len(self.estimators.keys()) > 0
-
+            # We only have one KNN model here, thus the ```creators``` has one element. 
+            # It is easy to include other machine learning models by introducing them
+            # to self.estimators and then the _HyperEstimatorCreator will automaticall
+            # generate the desired models. 
             creators = [_HyperEstimatorCreator(pairs[0],
                                             init_kwargs=_merge_dict(pairs[1], options.pop(f'{k}_init_kwargs', None)),
                                             fit_kwargs=_merge_dict(pairs[2], options.pop(f'{k}_fit_kwargs', None)))
@@ -269,7 +271,7 @@ The most important part and the primary work we will do is to extend our search 
 
         def __call__(self, *args, **kwargs):
             options = _merge_dict(self.options, kwargs)
-
+            
             space = HyperSpace()
             with space.as_default():
                 hyper_input = HyperInput(name='input1')
@@ -300,6 +302,12 @@ The most important part and the primary work we will do is to extend our search 
 
         def __call__(self, *args, **kwargs):
             return self.estimator_cls(self.estimator_fit_kwargs, **self.estimator_init_kwargs)
+    ```
+
+    Then a search space can be taken as
+
+    ```python
+    search_space_eg = KnnSearchSpaceGenerator()
     ```
 
 - ***Constructing the Hypermodel.*** Similar to last section, to construct the HyperModel(named as ```KnnModel```) one only needs to define two functions properly: ```_get_estimator``` and ```load_estimator```. Other necessary parts of it have already been well defined.
@@ -406,13 +414,15 @@ The most important part and the primary work we will do is to extend our search 
             ...
     ```
 
-    There are extra things need to be noted: our AutoML for KNN model should be utilized as in a module space and automatically adjust itself for the classification or regression task. For this purpose, a ```HyperEstimator``` is defined and ```ComplexKnn``` is provided to wrap the KNN for our full-pipeline machine learning modeling:
+    There are extra things need to be noted: our AutoML for KNN model should be utilized in the form of a module space and automatically adjust itself for the classification or regression task. For these purposes, a ```ComplexKnn``` is provided to wrap the KNN to the HyperSpace for our full-pipeline machine learning modeling:
 
     ```python
     class ComplexKnn(HyperEstimator):
-        def __init__(self, fit_kwargs, n_neighbors=2, weights='uniform', algorithm='brute', 
+        def __init__(self, fit_kwargs, 
+                        n_neighbors=2, weights='uniform', algorithm='brute', 
                         leaf_size=30, p=2, metric='minkowski', metric_params=None, n_jobs=None,
-                        space=None, name=None, **kwargs):
+                        space=None, name=None, **kwargs
+                    ):
             ...
             HyperEstimator.__init__(self, fit_kwargs, space, name, **kwargs)
 
@@ -424,9 +434,9 @@ The most important part and the primary work we will do is to extend our search 
             return knn     
     ```
 
-    Please refer ```estimator.py``` for further details.
+    where the ```HyperEstimator``` inherits from the ```ModuleSpace``` to transfer our KNN model to a module space in the search space. Please refer ```estimator.py``` for further details.
 
-We now have the complete AutoML tool for full-pipeline machine learning modeling with KNN! Let's try this for a simple example.
+We now have the complete AutoML tool for full-pipeline machine learning modeling with KNN! Let's try this for a simple example following the routine discussed in the end of last section:
 
 ```python
 #Load the data and suppose that the task is multi-classification
