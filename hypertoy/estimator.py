@@ -28,13 +28,13 @@ class HyperEstimator(ModuleSpace):
     def _on_params_ready(self):
         pass
 
-class KNNClassifierWrapper(neighbors.KNeighborsClassifier):
+class KnnClassifierWrapper(neighbors.KNeighborsClassifier):
     def fit(self, X, y, **kwargs):
         task = self.__dict__.get('task')
-        super(KNNClassifierWrapper, self).fit(X, y, **kwargs)
+        super(KnnClassifierWrapper, self).fit(X, y, **kwargs)
 
     def predict_proba(self, X, **kwargs):
-        proba = super(KNNClassifierWrapper, self).predict_proba(X, **kwargs)
+        proba = super(KnnClassifierWrapper, self).predict_proba(X, **kwargs)
         return proba
 
     @property
@@ -46,12 +46,12 @@ class KNNClassifierWrapper(neighbors.KNeighborsClassifier):
                 scores = list(valid.values())[0] 
         return scores
 
-class KNNRegressorWrapper(neighbors.KNeighborsRegressor):
+class KnnRegressorWrapper(neighbors.KNeighborsRegressor):
     def fit(self, X, y, **kwargs):
-        super(KNNRegressorWrapper, self).fit(X, y, **kwargs)
+        super(KnnRegressorWrapper, self).fit(X, y, **kwargs)
 
     def predict(self, X, **kwargs):
-        pred = super(KNNRegressorWrapper, self).predict(X, **kwargs)
+        pred = super(KnnRegressorWrapper, self).predict(X, **kwargs)
         return pred
 
     @property
@@ -63,7 +63,7 @@ class KNNRegressorWrapper(neighbors.KNeighborsRegressor):
                 scores = list(valid.values())[0]
         return scores
 
-class kNNEstimator(HyperEstimator):
+class ComplexKnn(HyperEstimator):
     def __init__(self, fit_kwargs, n_neighbors=2, weights='uniform', algorithm='brute', 
                     leaf_size=30, p=2, metric='minkowski', metric_params=None, n_jobs=None,
                      space=None, name=None, **kwargs):
@@ -87,9 +87,9 @@ class kNNEstimator(HyperEstimator):
 
     def _build_estimator(self, task, kwargs):
         if task == 'regression':
-            knn = KNNRegressorWrapper(**kwargs)
+            knn = KnnRegressorWrapper(**kwargs)
         else:
-            knn = KNNClassifierWrapper(**kwargs)
+            knn = KnnClassifierWrapper(**kwargs)
         return knn
 
 

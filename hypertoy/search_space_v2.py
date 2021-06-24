@@ -1,5 +1,5 @@
 
-from hypertoy.estimator import kNNEstimator
+from hypertoy.estimator import ComplexKnn
 from hypertoy.pipeline import DataFrameMapper
 from hypertoy.cfg import KnnCfg as cfg
 
@@ -58,7 +58,7 @@ class KnnSearchSpaceGenerator(object):
     @property
     def estimators(self):
         r = {}
-        r['knn'] = (kNNEstimator, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)
+        r['knn'] = (ComplexKnn, self.default_knn_init_kwargs, self.default_knn_fit_kwargs)
         return r
     
     def create_preprocessor(self, hyper_input, options):

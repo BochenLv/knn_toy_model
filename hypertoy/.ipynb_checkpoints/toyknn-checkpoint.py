@@ -14,7 +14,7 @@ from hypernets.tabular.data_cleaner import DataCleaner
 from hypernets.tabular.metrics import calc_score
 from hypernets.utils import fs
 
-class KnnEstimator(Estimator):
+class toy_KNN_estimator(Estimator):
     """
     Using this class allows searching for mutiple models by modifying the searching space
     accordingly rather than only including knnEstimator defined in
@@ -33,7 +33,7 @@ class KnnEstimator(Estimator):
             class_balancing: whether performing class balancing, bool
             _build_model: as the name implied, establishing the model
         """
-        super(KnnEstimator, self).__init__(space_sample=space_sample, task=task)    
+        super(toy_KNN_estimator, self).__init__(space_sample=space_sample, task=task)    
         self.data_pipeline = None
         self.data_cleaner_params = data_cleaner_params
         self.data_cleaner = None
@@ -193,7 +193,7 @@ class KnnEstimator(Estimator):
         return state
 
 
-class KnnModel(HyperModel):
+class toy_KNN(HyperModel):
     """
     KNN as a toy example. This class includes several methods as explained below.
     _get_estimator: return a knn estimator
@@ -208,10 +208,10 @@ class KnnModel(HyperModel):
                             task=task, discriminator=discriminator)
 
     def _get_estimator(self, space_sample):
-        estimator = KnnEstimator(task=self.task, space_sample=space_sample,
+        estimator = toy_KNN_estimator(task=self.task, space_sample=space_sample,
                                       data_cleaner_params=self.data_cleaner_params)
         return estimator
 
     def load_estimator(self, model_file):
         assert model_file is not None
-        return KnnEstimator.load(model_file)
+        return toy_KNN_estimator.load(model_file)

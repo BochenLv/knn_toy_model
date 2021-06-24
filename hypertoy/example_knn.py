@@ -1,5 +1,5 @@
-from hypertoy.toyknn import toy_KNN
-from hypertoy.search_space import search_space_eg
+from hypertoy.toyknn import KnnModel
+from hypertoy.search_space_v2 import search_space_eg
 from hypernets.searchers import RandomSearcher
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
@@ -10,7 +10,7 @@ X[:3]
 
 search_space = search_space_eg
 searcher = RandomSearcher(search_space)
-sampled_model = toy_KNN(searcher, task='multiclass', reward_metric='accuracy', callbacks=[])
+sampled_model = KnnModel(searcher, task='multiclass', reward_metric='accuracy', callbacks=[])
 sampled_model.search(X_train, y_train, X_evl=None, y_evl=None, cv=False)
 
 best_classifier = sampled_model.load_estimator(sampled_model.get_best_trial().model_file)

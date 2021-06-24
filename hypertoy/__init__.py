@@ -1,1 +1,1 @@
-from .toyknn import toy_KNN, toy_KNN_estimator, HyperEstimator, HyperModel
+from .toyknn import KnnModel, KnnEstimator, HyperEstimator, HyperModel
