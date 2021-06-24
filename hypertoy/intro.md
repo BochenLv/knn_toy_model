@@ -49,14 +49,15 @@ Parameter tuning is only a fraction of the full-pipeline AutoML process and ```H
 ## Parameter tuning for KNN with an AutoML tool built with Hypernets
 
 ```Hypernets``` is an AutoML framework that allows the users to easily develop various kinds of AutoML and Automated Deep Learning(AutoDL) tools without reinventing some necessary components which are often common to such tools. Before ```Hypernets```, there already existed many AutoML tools. However, these tools are usually designed for some specific purposes thus not convenient to be generalized to other ones. As a result, the AutoML community may have to take a lot of efforts to repeatedly develop some common parts before deploying their AutoML models due to the lack of an underlying AutoML framework.
-
+![Abstraction of the AutoML](./figs/AutoML_procedure.png)
 ```Hypernets``` can save such efforts to a large extent while offering more possibilities.
 
 - First, it decouples the basic components of a general AutoML procedure (Fig. \ref) as four distinct parts: the ```HyperSpace```, the ```Searcher```, the ```HyperModel```, and the ```Estimation Strategy``` (Fig. \ref). This idea is motivated by allowing users to manipulate different components of an AutoML tool built with ```Hypernets``` accordingly for different purposes.
+![Basic building blocks of Hypernets](./figs/Hypernets.png)
 - Second, the ```HyperSpace``` is designed to be a powerful search space. The ```HyperSpace``` consists of three different kinds of space: the **module space**, the **parameter space** and the **connection space**, where the module space is designed to contain various machine learning models, data preprocessing or feature engineerings, the parameter space provides the parameters to be searched for machine learning models and the connection space determines the way how different module spaces connect. These connected module spaces and parameter spaces finally give us a highly comprehensive search space which is able to describe the full-pipeline machine learning modeling ranging from data preprocessing to model ensemble.
 - Third, ```Hypernets``` provides many search algorithms including simple methods, such as Random Search and Grid Search, and advanced ones such as Monte-Carlo Tree Search. Users can not only simply choose one from these efficient search methods but also similarly design new search algorithms.
 - Finally, ```Hypernets``` also supports many advanced techniques to further improve performances of the trained machine learning models. For example, users can apply early stopping to accelerate the training process and prevent overfitting; data cleaning can be applied to improve data quality; data drift detection can be enabled to improve the generalization ability of the model, etc.
-![AutoML](./figs/AutoML_procedure.png)
+
 Based on the above brief introduction, using the ```Hypernets``` to implement an AutoML task can now be decomposed as three parts: designing the **search space**, an instance of the ```Hyperspace```, constructing the **Hypermodel** which will be sampled from the search space using a searcher provided by ```Hypernets``` during the search process, and building the **Estimator** which receives a sampled Hypermodel, evaluates it and then returns the corresponding rewards such that the searcher can update the Hypermodel to be sampled based on the rewards.
 
 We will provide a toy example, designing an AutoML tool for KNN, to help the readers walk through the all steps of implementing the ```Hypernets``` to an AutoML task.
