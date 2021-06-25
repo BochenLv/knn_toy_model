@@ -203,7 +203,7 @@ However, readers will also immediately notice that, before sending the dataset t
 
 ## Building your full-pipeline AutoML tool for KNN<span id=sec_eg>
 
-Typically, the procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpose of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets.
+Typically, the procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpose of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such an AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets.
 
 Therefore, the most important part and the primary work we will do is to extend our search space based on the introduction of the basic building blocks of ```Hypernets``` in last section. For clarity, we still follow the 3 steps of developing our AutoML tools for full-pipeline KNN model with ```Hypernets``` as indicated before.
 
