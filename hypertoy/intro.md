@@ -4,7 +4,7 @@ Parameter tuning is an inevitable step for successfully building a machine learn
 
 The answer is positive.
 
-```Hypernets```, a unified Automated Machine learning(AutoML) framework, offers us a very simple way to solve such problems. Taking the parameter tuning problem of the KNN model as an example, using a ```search_param``` function from the ```Hypernets```, the only required work for us is to define a function serving as the measure of the quality of a set of given parameters.
+```Hypernets```, a unified Automated Machine learning(AutoML) framework, offers us a very simple way to solve such problems. Taking the parameter tuning problem of the KNN model as an example, using a ```search_param``` function from the ```Hypernets```, the only required work for us is to define a function serving as the measure of the quality of a set of given parameters. *Please see [here](#https://github.com/DataCanvasIO/Hypernets) for the ```Hypernets``` library.*
 
 ```python
 from sklearn import neighbors
