@@ -12,7 +12,8 @@ from sklearn import neighbors
 def param_space():
     space = HyperSpace()
 
-    model_param = dict(
+    with space.as_default():
+        model_param = dict(
             n_neighbors=Choice([2, 3, 5, 6]),
             weights=Choice(['uniform', 'distance']),
             algorithm=Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
@@ -21,13 +22,10 @@ def param_space():
             metric='minkowski',
             metric_params=None, 
             n_jobs=None,
-        )
-
-    with space.as_default():
+            )
         hyper_input = HyperInput(name='input1')
-        model = neighbors.KNeighborsClassifier
-        modules = ModuleSpace(neighbors.KNeighborsClassifier, *model_param)
-        outputs = ModuleChoice(modules)(hyper_input)
+        modules = ModuleSpace(name=neighbors.KNeighborsClassifier.__name__, **model_param)
+        output = modules(hyper_input)
         space.set_inputs(hyper_input)
 
     return space
@@ -40,7 +38,7 @@ class KnnEstimator(Estimator):
         out = space_sample.get_outputs()[0]
         kwargs = out.param_values
         kwargs = {key: value for key, value in kwargs.items() if not isinstance(value, HyperNode)}
-
+        
         self.model = neighbors.KNeighborsClassifier(**kwargs)
         self.model_args = kwargs
     
@@ -68,8 +66,9 @@ class KnnEstimator(Estimator):
         with fs.open(model_file, 'rb') as f:
             return pickle.load(f)
 
-    def get_iteration_scores():
+    def get_iteration_scores(self):
         return []
+
 
 
 class KnnModel(HyperModel):
