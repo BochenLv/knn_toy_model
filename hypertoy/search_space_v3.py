@@ -1,17 +1,29 @@
-from hypertoy.pipeline import DataFrameMapper
+import numpy as np
+
 from hypertoy.estimator import ComplexKnn
-from .sklearn_ import cat_pipeline_simple
+from hypertoy.pipeline import Pipeline, DataFrameMapper
 
 from hypernets.core.ops import ModuleChoice, HyperInput
 from hypernets.core.search_space import Choice, Real, Int, Bool
 from hypernets.core.search_space import HyperSpace
+from hypernets.tabular import column_selector
+
+from sklearn_.transformers import SimpleImputer, SafeOrdinalEncoder, StandardScaler
+
 
 def search_space():
     space = HyperSpace()
     with space.as_default():
         hyper_input = HyperInput(name='input1')
-        cat_pipeline = cat_pipeline_simple()(hyper_input)
-    
+        
+        # build the categorical pipeline
+        cs = column_selector.column_object_category_bool
+        cat_pipeline = Pipeline([
+        SimpleImputer(missing_values=np.nan, strategy='constant', name=f'categorical_imputer_{0}'),
+        SafeOrdinalEncoder(name=f'categorical_label_encoder_{0}', dtype='int32')],
+        columns=cs,
+        name=f'categorical_pipeline_simple_{0}',
+        )(hyper_input)
 
         knn_params = {'n_neighbors': Choice([1, 3, 5]),
                 'weights': Choice(['uniform', 'distance']),

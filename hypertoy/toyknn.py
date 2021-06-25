@@ -92,9 +92,7 @@ class KnnEstimator(Estimator):
             pipeline = sk_pipeline.Pipeline(steps=transformers)
             return pipeline
 
-    @cache(arg_keys='X,y', attr_keys='data_cleaner_params,pipeline_signature',
-           attrs_to_restore='data_cleaner,data_pipeline',
-           transformer='transform_data')
+
     def fit_transform_data(self, X, y):
         if self.data_cleaner is not None:
             X, y = self.data_cleaner.fit_transform(X, y)
