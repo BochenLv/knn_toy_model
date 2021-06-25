@@ -1,10 +1,12 @@
 # A Brief Tutorial for Developing AutoML Tools with Hypernets
 
+*Please see [here](#https://github.com/DataCanvasIO/Hypernets) for the ```Hypernets``` library.*
+
 Parameter tuning is an inevitable step for successfully building a machine learning model. Even for a simple model as K-nearest neighbors(KNN) for the classification task, we need to at least determine the number of the neighbors and the distance metric to be used to predict the label of a given example. Let alone models which have much more tunable parameters and have to be trained multiple times before we can pick suitable values for their parameters. Furthermore, tuning parameters in a brute force approach is inefficient while using an advanced search method takes intensive efforts. Can we focus more on parts of machine learning like designing novel models while only perform procedures like parameter tuning in a simple and happy way?
 
 The answer is positive.
 
-```Hypernets```, a unified Automated Machine learning(AutoML) framework, offers us a very simple way to solve such problems. Taking the parameter tuning problem of the KNN model as an example, using a ```search_param``` function from the ```Hypernets```, the only required work for us is to define a function serving as the measure of the quality of a set of given parameters. *Please see [here](#https://github.com/DataCanvasIO/Hypernets) for the ```Hypernets``` library.*
+```Hypernets```, a unified Automated Machine learning(AutoML) framework, offers us a very simple way to solve such problems. Taking the parameter tuning problem of the KNN model as an example, using a ```search_param``` function from the ```Hypernets```, the only required work for us is to define a function serving as the measure of the quality of a set of given parameters. 
 
 ```python
 from sklearn import neighbors
