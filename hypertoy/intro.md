@@ -79,21 +79,20 @@ To reveal the core features and ideas of ```Hypernets```, we first continue to s
             # Choice(), a class which in fact inherits from the ParameterSpace, one of the three 
             # basic kinds of the HyperSpace. In other words, all values of the dictionary are 
             # parts of the parameter space if they are instances of Choice(). 
-            with space.as_default():
-                model_param = dict(
-                    n_neighbors=Choice([2, 3, 5, 6]),
-                    weights=Choice(['uniform', 'distance']),
-                    algorithm=Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
-                    leaf_size=Choice([20, 30, 40]),
-                    p=Choice([1, 2]),
-                    metric='minkowski',
-                    metric_params=None, 
-                    n_jobs=None,
-                    )
-                hyper_input = HyperInput(name='input1')
-                modules = ModuleSpace(name=neighbors.KNeighborsClassifier.__name__, **model_param)
-                output = modules(hyper_input)
-                space.set_inputs(hyper_input)
+            model_param = dict(
+                n_neighbors=Choice([2, 3, 5, 6]),
+                weights=Choice(['uniform', 'distance']),
+                algorithm=Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
+                leaf_size=Choice([20, 30, 40]),
+                p=Choice([1, 2]),
+                metric='minkowski',
+                metric_params=None, 
+                n_jobs=None,
+                )
+            hyper_input = HyperInput(name='input1')
+            modules = ModuleSpace(name=neighbors.KNeighborsClassifier.__name__, **model_param)
+            output = modules(hyper_input)
+            space.set_inputs(hyper_input)
 
         return space
 
