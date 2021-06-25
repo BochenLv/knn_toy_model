@@ -9,7 +9,6 @@ from hypertoy.estimator import HyperEstimator
 
 from hypernets.model.estimator import Estimator
 from hypernets.model.hyper_model import HyperModel
-from hypernets.tabular.cache import cache
 from hypernets.tabular.data_cleaner import DataCleaner
 from hypernets.tabular.metrics import calc_score
 from hypernets.utils import fs

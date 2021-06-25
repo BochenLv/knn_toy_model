@@ -1,5 +1,5 @@
 from hypertoy.toyknn import KnnModel
-from hypertoy.search_space_v2 import search_space_eg
+from hypertoy.search_space_complicated import search_space_eg
 from hypernets.searchers import RandomSearcher
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split

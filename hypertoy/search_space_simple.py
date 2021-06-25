@@ -1,14 +1,14 @@
 import numpy as np
 
 from hypertoy.estimator import ComplexKnn
-from hypertoy.pipeline import Pipeline, DataFrameMapper
+from hypertoy.pipeline import Pipeline
 
-from hypernets.core.ops import ModuleChoice, HyperInput
-from hypernets.core.search_space import Choice, Real, Int, Bool
+from hypernets.core.ops import HyperInput
+from hypernets.core.search_space import Choice
 from hypernets.core.search_space import HyperSpace
 from hypernets.tabular import column_selector
 
-from sklearn_.transformers import SimpleImputer, SafeOrdinalEncoder, StandardScaler
+from sklearn_.transformers import SimpleImputer, SafeOrdinalEncoder
 
 
 def search_space():

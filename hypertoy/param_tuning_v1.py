@@ -3,7 +3,7 @@ from sys import modules
 import pickle
 import copy
 
-from hypernets.core.ops import Identity, HyperInput, ModuleChoice
+from hypernets.core.ops import HyperInput, ModuleChoice
 from hypernets.core.search_space import Choice, HyperNode, HyperSpace, ModuleSpace
 from hypernets.model import Estimator, HyperModel
 from hypernets.utils import fs
@@ -11,10 +11,15 @@ from hypernets.searchers.grid_searcher import GridSearcher
 
 from sklearn import neighbors
 
-def param_space():
-    space = HyperSpace()
 
-    model_param = dict(
+class Param_space(object):
+    def __init__(self, **kwargs):
+        super(Param_space, self).__init__()
+
+    @property
+    def knn(self):
+        return dict(
+            cls=neighbors.KNeighborsClassifier,
             n_neighbors=Choice([2, 3, 5, 6]),
             weights=Choice(['uniform', 'distance']),
             algorithm=Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
@@ -25,15 +30,17 @@ def param_space():
             n_jobs=None,
         )
 
-    with space.as_default():
-        hyper_input = HyperInput(name='input1')
-        model = neighbors.KNeighborsClassifier
-        modules = ModuleSpace(neighbors.KNeighborsClassifier, *model_param)
-        outputs = ModuleChoice(modules)(hyper_input)
-        space.set_inputs(hyper_input)
+    def __call__(self, *args, **kwargs):
+        space = HyperSpace()
 
-    return space
+        with space.as_default():
+            hyper_input = HyperInput(name='input1')
+            model = self.knn
+            modules = [ModuleSpace(name=f'{model["cls"].__name__}', **model)]
+            outputs = ModuleChoice(modules)(hyper_input)
+            space.set_inputs(hyper_input)
 
+        return space
 
 class KnnEstimator(Estimator):
     def __init__(self, space_sample, task='binary'):
@@ -43,7 +50,9 @@ class KnnEstimator(Estimator):
         kwargs = out.param_values
         kwargs = {key: value for key, value in kwargs.items() if not isinstance(value, HyperNode)}
 
-        self.model = neighbors.KNeighborsClassifier(**kwargs)
+        cls = kwargs.pop('cls')
+        self.model = cls(**kwargs)
+        self.cls = cls
         self.model_args = kwargs
     
     def fit(self, X, y, **kwargs):
@@ -73,7 +82,6 @@ class KnnEstimator(Estimator):
     def get_iteration_scores():
         return []
 
-
 class KnnModel(HyperModel):
     def __init__(self, searcher, reward_metric=None, task=None):
         super(KnnModel, self).__init__(searcher, reward_metric=reward_metric, task=task)
@@ -83,3 +91,27 @@ class KnnModel(HyperModel):
     
     def load_estimator(self, model_file):
         return KnnEstimator.load(model_file)
+
+#implementing the search method using Hypernets directly.
+def param_search():
+    return NotImplementedError
+
+#calling the defined search method of the HyperModel.
+
+#train
+def train(X_train, y_train, X_eval, y_eval, optimize_direction='max', **kwargs):
+
+    search_space = Param_space()
+    searcher = GridSearcher(search_space, optimize_direction=optimize_direction)
+    model = KnnModel(searcher=searcher, task='multiclass', reward_metric='accuracy')
+    model.search(X_train, y_train, X_eval, y_eval, **kwargs)
+    best_model = model.get_best_trial()
+    final_model = model.final_train(best_model.space_sample, X_train, y_train)
+    return model, final_model
+
+params = {'n_neighbors': Choice([2, 3, 5, 6]),
+            'weights': Choice(['uniform', 'distance']),
+            'algorithm': Choice(['auto', 'ball_tree', 'kd_tree', 'brute']),
+            'leaf_size': Choice([20, 30, 40]),
+            'p': Choice([1, 2]),
+        }
