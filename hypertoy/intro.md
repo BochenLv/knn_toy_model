@@ -205,7 +205,7 @@ However, readers will also immediately notice that, before sending the dataset t
 
 Typically, the procedures of a full-pipeline machine learning modeling range from data preprocessing to model ensemble. For the purpose of enabling our AutoML tool to automate such full-pipeline modeling, we need to design a more comprehensive search space, which should at least include transformations of the data, feature engineerings, and the machine learning models along with their tunable parameters. Such an AutoML tool will largely relieve us from the headaches of dealing with data and feature issues of datasets.
 
-Therefore, the most important part and the primary work we will do is to extend our search space based on the introduction of the basic building blocks of ```Hypernets``` in last section. For clarity, we still follow the 3 steps of developing our AutoML tools for full-pipeline KNN model with ```Hypernets``` as indicated before.
+Therefore, the most important part and the primary work we will do is to extend our search space based on the introduction of the basic building blocks of ```Hypernets``` in the last section. For clarity, we still follow the 3 steps of developing our AutoML tools for full-pipeline KNN model with ```Hypernets``` as indicated before.
 
 - ***Designing a search space.*** To enable our AutoML tool to perform procedures like data    preprocessing, we need to encapsulate these procedures into module spaces for our search space, a ```HyperSpace``` object, and then connect them using the ```ConnectionSpace``` as introduced above. For this reason, these module spaces are now divided into two kinds: one containing the **preprocessor** and the other for **machine learning model**, i.e. KNN model here. We now devote to wrapping these two kinds of module spaces into our search space respectively for full-pipeline AutoML process.
 
@@ -248,7 +248,7 @@ Therefore, the most important part and the primary work we will do is to extend 
         return space
     ```
 
-- ***Constructing the Hypermodel.*** Similar to last section of the parameter tuning problem, to construct the HyperModel(named as ```KnnModel```) one only needs to define two functions properly: ```_get_estimator``` and ```load_estimator```. Other necessary parts of it have already been well defined in ```Hypernets```.
+- ***Constructing the Hypermodel.*** Similar to the last section of the parameter tuning problem, to construct the HyperModel(named as ```KnnModel```) one only needs to define two functions properly: ```_get_estimator``` and ```load_estimator```. Other necessary parts of it have already been well defined in ```Hypernets```.
 
     ```python
     class KnnModel(HyperModel):
@@ -372,7 +372,7 @@ There are extra things need to be noted: our KNN model should be utilized in the
 
 where the ```HyperEstimator``` inherits from the ```ModuleSpace``` to transfer our KNN model to a module space in the search space. Please refer [```estimator.py```](https://github.com/BochenLv/knn_toy_model/blob/main/hypertoy/estimator.py) for further details.
 
-We now have the complete AutoML tool for full-pipeline machine learning modeling with KNN! Let's try to use our extended AutoML tool for an example following the routine discussed in the end of last section:
+We now have the complete AutoML tool for full-pipeline machine learning modeling with KNN! Let's try to use our extended AutoML tool for an example following the routine discussed in the end of the last section:
 
 ```python
 #Load the data and suppose that the task is multi-classification
